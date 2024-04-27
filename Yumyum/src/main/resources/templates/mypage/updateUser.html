@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+    <th:block layout:fragment="title">
+        <title>YumYum 회원정보 수정</title>
+    </th:block>
+    <th:block layout:fragment="header">
+        <h6 class="display-6 fw-bolder">My Page</h6>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+
+	<th:block layout:fragment="content">
+        <div class="card-content col mt-5">
+            <form class="form-horizontal" th:action="@{/updateMemInfo}" th:object="${member}" method="post" >
+            
+                <input type="hidden" th:if="*{userNum != null and userNum > 0}" th:field="*{userNum}" />
+                
+                <div class="form-group">
+                    <div class="input-group mt-2" style="width:500px; margin:auto;">
+                        <span class="input-group-text" style="width:130px;">이름</span>
+                        <input type="text" id="userName" name="userName" th:field="*{name}" class="form-control" 
+                                placeholder="이름을 입력해 주세요." required oninput = "nameCheck()" />
+                    </div>
+                    <div class="input-group" style="width:500px; margin:auto;">
+                        <span class="span_name_check" style="display:none;"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-group mt-2" style="width:500px; margin:auto;">
+                        <span class="input-group-text" style="width:130px;">아이디</span>
+                        <input type="text" id="userId" name="userId" th:field="*{id}" class="form-control" 
+                                placeholder="6~10자 영문 소문자, 숫자를 사용하세요." required oninput = "idCheck()" readonly/>
+                    </div>
+                    <div class="input-group" style="width:500px; margin:auto;">
+                        <span class="span_id_check" style="display:none;"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-group mt-2" style="width:500px; margin:auto;">
+                        <span class="input-group-text" style="width:130px;">전화번호</span>
+                        <input type="text" id="tel" name="tel" th:field="*{tel}" class="form-control" 
+                                placeholder="'-'와 함께 전화번호를 입력해 주세요." required oninput = "phoneCheck()" />
+                    </div>
+                    <div class="input-group" style="width:500px; margin:auto;">
+                        <span class="span_tel_check" style="display:none;"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-group mt-2" style="width:500px; margin:auto;">
+                        <span class="input-group-text" style="width:130px;">이메일</span>
+                    <!-- email -->  
+                        <input type="text" id="email" name="email" th:field="*{email}" class="form-control"
+                                readonly/>
+                        <input type="button" class="btn btn-outline-secondary waves-effect waves-light" 
+                                onclick="openModalEmail()" value="변경하기" />
+                    </div>
+		                    
+		            <div class="input-group" style="width:450px; margin:auto;">
+		            	<span class="span_email_check" style="display:none;"></span>
+		            </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-group mt-2" style="width:500px; margin:auto;">
+                        <span class="input-group-text" style="width:130px;">생년월일</span>
+                        <input type="text" id="birth" name="birth" class="form-control" 
+                                required oninput = "birthCheck()" readonly/>
+                    </div>
+                    <div class="input-group" style="width:500px; margin:auto;">
+                        <span class="span_birth_check" style="display:none;"></span>
+                    </div>
+                </div>
+				<div class="btn_wrap text-center mt-4">
+				    <a th:href="@{/mypage}" class="btn btn-outline-dark waves-effect waves-light mx-2 w-32">뒤로가기</a>
+					<button type="submit" class="btn btn-outline-dark waves-effect waves-light mx-2 w-32">수정하기</button>
+					<a id="btnChangePw" class="btn btn-outline-dark waves-effect waves-light mx-2 w-32" onclick="openModalPw()">비밀번호 변경</a>
+				</div>
+		      </form>
+		  </div>
+        <!-- /.card-content -->
+        <!-- <div th:replace="yumyum/fragments/mypageSidebar :: sidebar"> </div> -->
+	</th:block>
+
+<th:block layout:fragment="modal">
+
+	<div id="modalChangeEmail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+		
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				
+				<div class="modal-header" style="display: flex; justify-content: space-between;">
+					<div class="font-semibold mt-2 mb-2 ml-2 text-2xl text-center dark">
+						이메일 인증</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" 
+							onclick="openModalEmail()">
+						<img aria-hidden="true" th:src="@{https://cdn3.iconfinder.com/data/icons/status/100/close_1-512.png}"
+								style="width: 15px; height: 15px; margin: 20px;"></img>
+							<!-- <span aria-hidden="true"></span> -->
+					</button>
+				</div>
+					
+				<div class="modal-body">
+					<div class="modalId-content">
+						<div class="mt-2">
+							<p class="ml-2 mt-2">이메일 변경을 위해 메일인증을 해 주세요.</p>
+						</div>
+
+						<div class="mt-3 form-group">
+							<label class="ml-2 col-sm-2 font-bold">이메일</label>
+							<div class="mt-2 input-group">
+			                   <!-- email -->  
+			                    <input type="text" id="changeEmail" name="changeEmail" class="form-control"
+			                            placeholder="이메일을 입력해 주세요." required oninput = "emailCheck()" />
+			                    <input type="button" class="btn btn-outline-secondary waves-effect waves-light" 
+			                            id="btnChangeEmail" name="btnChangeEmail" value="인증코드 전송" />
+			                </div>
+		                    
+		                    <div class="input-group mt-2">
+		                    <!-- 인증코드 -->       
+		                        <input type="text" id="certifyCode" name="certifyCode" style="display:none;"
+		                                class="form-control" placeholder="인증코드">
+		                        <input type="button" class="btn btn-outline-secondary waves-effect waves-light" style="display:none;" 
+		                                id="btnCodeSubmit" name="btnCodeSubmit" value="인증">
+		                    </div>
+		                    
+		                    <div class="input-group">
+		                        <span class="span_changeEmail_check" style="display:none;"></span>
+		                    </div>
+		                </div>
+					</div>
+						
+					<div class="mt-2 mr-2 text-right">
+						<button class="btn btn-dark waves-effect waves-light" 
+								id="btnConfirm" name="btnConfirm">확인</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div id="modalChangePw" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+		
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				
+				<div class="modal-header" style="display: flex; justify-content: space-between;">
+					<div class="font-semibold mt-2 mb-2 ml-2 text-2xl text-center dark">
+						비밀번호 변경</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" 
+							onclick="openModalPw()">
+						<img aria-hidden="true" th:src="@{https://cdn3.iconfinder.com/data/icons/status/100/close_1-512.png}"
+								style="width: 15px; height: 15px; margin: 20px;"></img>
+							<!-- <span aria-hidden="true"></span> -->
+					</button>
+				</div>
+					
+				<div class="modal-body">
+					
+					<div class="modalId-content">
+						<div class="mt-2">
+							<p class="ml-2 mt-2">새로운 비밀번호를 입력해주세요.</p>
+						</div>
+                
+			            <div class="mt-3 form-group">
+							<label class="ml-2 col-sm-2 font-bold">비밀번호</label>
+							<div class="mt-2 input-group">
+			                    <input type="password" id="passcode" name="passcode" class="form-control" 
+			                            placeholder="10~15자 영문, 숫자, 특수문자를 사용하세요." required oninput = "pwCheck()" />
+			                </div>
+			                <div class="input-group">
+			                    <span class="span_password_check" style="display:none;"></span>
+			                </div>
+			            </div>
+			                
+			            <div class="mt-3 form-group">
+							<label class="ml-2 col-sm-2 font-bold">비밀번호 확인</label>
+							<div class="mt-2 input-group">
+			                    <input type="password" id="passcode1" name="passcode1" class="form-control" 
+			                            placeholder="10~15자 영문, 숫자, 특수문자를 사용하세요." required oninput = "pwCheck1()" />
+			                </div>
+			                <div class="input-group">
+			                    <span class="span_password1_check" style="display:none;"></span>
+			                </div>
+			            </div>
+					</div>
+						
+					<div class="mt-2 mr-2 text-right">
+						<button class="btn btn-secondary waves-effect waves-light" 
+								id="btnPwConfirm" name="btnPwConfirm">확인</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</th:block>
+	
+<th:block layout:fragment="script">
+    <script src='https://code.jquery.com/jquery-3.5.0.js'></script>
+    <script th:inline="javascript">
+        /*<![CDATA[ */
+        	let birth = /*[[${member.birth}]]*/
+         	birth= birth.substring(0,10);
+        	$("#birth").val(birth);
+ 
+    $(document)
+    
+    .on('click', '#btnPwConfirm', function(){
+        if (!pwCheck($('#passcode').val())) {
+            alert('비밀번호를 확인해주세요.');
+            return false;
+            
+        } else if ($('#passcode').val() != $('#passcode1').val()) {
+            alert('비밀번호와 비밀번호 확인이 같지 않습니다.');
+            return false;
+            
+        } else {
+        	$.ajax({
+		    	url:'/updatePw',
+		        type:'post',
+		        data:{pw:$('#passcode').val()},
+		        success:function(result){ //컨트롤러에서 넘어온 result값을 받는다 
+		        	console.log("result update PW: "+result);
+		        	if(result == null){ //result가 1이 아니면(=0일 경우) -> 본인확인 실패 
+			        	console.log("result update PW null: "+result);
+		        		alert("비밀번호 변경 실패.");
+			            return false;
+		                
+		            } else { // result가 1일 경우 -> 본인확인 완료
+			        	console.log("result update PW notnull: "+result);
+			            alert('비밀번호 변경이 완료되었습니다.');
+						document.location="/updateuser";
+				        return true;
+		            }
+		        },
+		        error:function(){
+	        		alert("본인임을 확인할 수 없습니다.");
+		            console.log("본인임을 확인할 수 없습니다.");
+		            return false;
+		        }
+			});
+        }
+    })
+    
+    .on('click', '#btnChangeEmail', function(){
+        if (!emailCheck($('#changeEmail').val())) {
+            alert('이메일을 확인해주세요.');
+            return false;
+            
+        };
+    })
+    .on('click', '#btnConfirm', function(){
+        if (!emailCheck($('#changeEmail').val())) {
+            alert('이메일을 확인해주세요.');
+            return false;
+            
+        } else if ($('.span_changeEmail_check').html() != "인증완료"){
+            alert('이메일 인증을 완료해 주세요.');
+            return false;
+            
+        } else {
+        	$('#email').empty();
+        	$('#email').val($('#changeEmail').val());
+        	openModalEmail();
+        };
+    	
+    })
+    
+    .on('click', '#btnCodeSubmit', function(){
+        $.ajax({
+            url:'/verifyCode',
+            type:'POST',
+            data:{code: $('#certifyCode').val()},
+            success: function(result) { 
+                if (result == 1){
+                    alert("인증되었습니다.");
+                    $('#certifyCode').css("display","none");
+                    $('#btnCodeSubmit').css("display","none");
+                    $('.span_changeEmail_check').html("인증완료");
+                    $('.span_changeEmail_check').css("display","inline-block");
+                    $('.span_changeEmail_check').css("color","black"); 
+                    
+                } else {
+                    alert("인증에 실패하였습니다.");
+                    $('#certifyCode').css("display","none");
+                    $('#btnCodeSubmit').css("display","none");
+                    return false;
+                }
+            },
+            error:function(){
+                alert("인증실패");
+                return false;
+            }
+        });
+    })
+    
+    .on('click', '#btnChangeEmail', function(){
+        $.ajax({
+            url:'/mail',
+            type:'POST',
+            data:{email: $('#changeEmail').val()},
+            dataType : "text",
+            success: function(text) { 
+                if (!emailCheck(text)){
+                    alert("메일 전송에 실패하였습니다.");
+                    $('#certifyCode').css("display","none");
+                    $('#btnCodeSubmit').css("display","none");
+                    return false;
+                    
+                } else {
+                    alert("인증코드를 전송하였습니다.");
+                    $('#certifyCode').css("display","inline-block");
+                    $('#btnCodeSubmit').css("display","inline-block");
+                    return true;
+                }
+            },
+            error:function(){
+                alert("인증코드전송 실패입니다");
+                $('#certifyCode').css("display","none");
+                $('#btnCodeSubmit').css("display","none");
+                return false;
+            }
+        });
+    })
+    
+    .on('submit', function() {
+        if (!nameCheck($('input[name=userName]').val())) {
+            alert('이름을 확인해주세요.');
+            return false;
+            
+        }
+        if (!phoneCheck($('#tel').val())) {
+            alert('전화번호를 확인해주세요.');
+            return false;
+            
+        } else {
+            alert('수정이 완료되었습니다.');
+            return true;
+        };
+    });
+        
+        
+	function openModalPw() {
+		
+        $("#modalChangePw").modal("toggle");
+    };
+	function openModalEmail() {
+		
+        $("#modalChangeEmail").modal("toggle");
+    };
+    
+    function nameCheck(){ /*이름 정규식*/
+        
+        var nameRegExp = /^[가-힣]{2,6}$/;
+        
+        var name = $('#userName').val();
+        if(!nameRegExp.test(name)) {
+            $('.span_name_check').html("이름을 제대로 입력해주세요.");
+            $('.span_name_check').css("display","inline-block");
+            $('.span_name_check').css("color","#6A82FB");
+            return false;
+            
+        } else {
+            $('.span_name_check').css("display","none");
+            return true;
+        };
+    };
+    function idCheck() { /*아이디 정규식*/
+        var idRegExp = /^[a-z0-9]{6,10}$/;
+        
+        var userid = $('#userId').val();
+        if(!idRegExp.test(userid)) {
+        	
+            $('.span_id_check').html("아이디를 제대로 입력해주세요.");
+            $('.span_id_check').css("display","inline-block");
+            $('.span_id_check').css("color","#6A82FB");
+            
+            return false;
+        } else {
+            $.ajax({
+                url:'/idOverlapCheck',
+                type:'post',
+                data:{id:userid},
+                success:function(result){ //컨트롤러에서 넘어온 result값을 받는다 
+                	console.log(result);
+                    if(result != 1){ //result가 1이 아니면(=0일 경우) -> 사용 가능한 아이디 
+                    	console.log(result);
+                        $('.span_id_check').html("사용 가능한 ID입니다.");
+                        $('.span_id_check').css("display","inline-block");
+                        $('.span_id_check').css("color","black"); 
+                        return true;
+                        
+                    } else { // result가 1일 경우 -> 이미 존재하는 아이디
+                    	console.log(result);
+                        $('.span_id_check').html("이미 존재하는 ID입니다.");
+                        $('.span_id_check').css("display","inline-block");
+                        $('.span_id_check').css("color","#6A82FB");
+                        return false;
+                    }
+                },
+                error:function(){
+                    console.log("ID를 확인해주세요.");
+                    return false;
+                }
+            });
+        };
+    };
+    function pwCheck(){ /*비밀번호 정규식*/
+        var pwRegExp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&^])[A-Za-z\d@$!%*#?&^]{10,20}$/;
+        
+        var pw = $('#passcode').val();
+        if(!pwRegExp.test(pw)) {
+            $('.span_password_check').html("비밀번호를 제대로 입력해주세요.");
+            $('.span_password_check').css("display","inline-block");
+            $('.span_password_check').css("color","#6A82FB");
+            return false;
+            
+        } else {
+            $('.span_password_check').css("display","none");
+            return true;
+        };
+    };
+    function pwCheck1(){ /* 비밀번호확인 */
+        
+        if($('#passcode1').val() != $('#passcode').val()) {
+            $('.span_password1_check').html("비밀번호와 같지 않습니다.");
+            $('.span_password1_check').css("display","inline-block");
+            $('.span_password1_check').css("color","#6A82FB");
+            return false;
+            
+        } else {
+            $('.span_password1_check').css("display","none");
+            return true;
+        };
+    };
+    function phoneCheck(){ /*전화번호 정규식*/
+        
+        var telRegExp = /^\d{3}-\d{3,4}-\d{4}$/;
+        
+        var tel = $('#tel').val();
+        if(!telRegExp.test(tel)) {
+            $('.span_tel_check').html("휴대폰번호를 제대로 입력해주세요.");
+            $('.span_tel_check').css("display","inline-block");
+            $('.span_tel_check').css("color","#6A82FB");
+            return false;
+            
+        } else {
+            $('.span_tel_check').css("display","none");
+            return true;
+        };
+    };
+    function emailCheck(){ /*이메일 정규식*/
+        var emailRegExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+        
+        var email = $('#email').val();
+        var changeEmail = $('#changeEmail').val();
+        
+        if (!emailRegExp.test(changeEmail)) {
+            $('.span_changeEmail_check').html("이메일을 제대로 입력해주세요.");
+            $('.span_changeEmail_check').css("display","inline-block");
+            $('.span_changeEmail_check').css("color","#6A82FB");
+            return false;
+        	
+        } else {
+            $('.span_changeEmail_check').css("display","none");
+            return true;
+        };
+    };
+
+        /*[- end of function -]*/
+
+        /*]]>*/
+    </script>
+</th:block>
+</html>

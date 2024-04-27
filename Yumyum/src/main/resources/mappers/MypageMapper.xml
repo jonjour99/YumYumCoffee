@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yum.mapper.MypageMapper">
+	
+	<select id="identification" parameterType="com.yum.domain.MemberDTO" resultType="com.yum.domain.MemberDTO">
+		SELECT user_num, id, pw
+		  FROM MEMBER 
+		 WHERE id = #{id}
+	</select>
+	
+    <sql id="couponColumns">
+        CP_NUM
+        , USER_NUM
+        , PM_NUM
+        , INSERT_DATE
+        , EXPIRATION_DATE
+        , KIND
+        , DELETE_YN
+        , DESCRIPTION
+    </sql>
+        
+    <!-- 생일쿠폰 잡, 스탬프 쿠폰 프로시저로 추가 -->    
+    <insert id="insertCoupon"> 
+        INSERT INTO COUPON (
+	        CP_NUM 
+	        , USER_NUM
+	        , INSERT_DATE 
+	        , EXPIRATION_DATE 
+	        , KIND 
+	        , DELETE_YN 
+	        , DESCRIPTION
+	        ) VALUES (
+	             SEQ.NEXTVAL  
+	            , #{userNum}
+	            , CURRENT_DATE
+	            , CURRENT_DATE+29
+	            , '스탬프'
+	            , 'N'
+	            , '아메리카노 1잔과 교환할 수 있습니다.'
+        )
+    </insert>
+    
+    <!-- 쿠폰 리스트 가져오기 -->
+    <select id="selectCouponList" parameterType="com.yum.domain.CouponDTO" resultType="com.yum.domain.CouponDTO">
+        SELECT 
+       		CP_NUM
+	        , EXPIRATION_DATE
+	        , KIND
+	        , DESCRIPTION
+        FROM 
+            COUPON
+        WHERE 
+            USER_NUM= #{userNum} 
+        AND 
+            DELETE_YN='N'
+        AND
+            EXPIRATION_DATE>=CURRENT_DATE
+        ORDER BY
+            EXPIRATION_DATE ASC
+    </select>
+    
+    <!-- 사용한 쿠폰 업데이트 -->
+    <update id="deleteCoupon" parameterType="com.yum.domain.CouponDTO">
+    	UPDATE
+    		COUPON
+    	SET
+    		DELETE_YN='Y'
+    		, ORDER_NUM=#{orderNum}
+    	WHERE 
+    		CP_NUM=#{cpNum}
+    </update>
+    
+    <!-- 회원 정보 불러오기 -->
+    <select id="selectUserDetail" parameterType="int" resultType="com.yum.domain.MemberDTO">
+        SELECT 
+            *
+        FROM 
+            MEMBER
+        WHERE 
+            USER_NUM= #{userNum} 
+    </select>
+    
+    <!-- 쿠폰 갯수 세기 -->
+    <select id="countCoupon" parameterType="com.yum.domain.CouponDTO" resultType="int">
+        SELECT 
+            COUNT(*)
+        FROM 
+            COUPON
+        WHERE 
+            USER_NUM= #{userNum} 
+        AND 
+            DELETE_YN='N'
+        AND
+            EXPIRATION_DATE>=CURRENT_DATE
+    </select>
+    
+    <!-- 과거 주문 내역 리스트 -->
+    <select id="selectOrderHistory" parameterType="map" resultType="com.yum.domain.OrderHistoryDTO">
+	       SELECT  
+	           o."order_num"
+	            , o."user_num"  
+	            , o."order_time" 
+	            , b.BRANCH_NAME
+	            , o."total_price" 
+	            , d."qty" 
+	            , d."price" 
+	            , s.INFO
+	            , p.NAME 
+	       FROM 
+	            "order_detail" d,
+	            "order" o 
+	            , BRANCH b
+	            , PRODUCT p
+	            , SHOTCUSTOM S 
+	       WHERE 
+	            d."order_num" IN (
+	            SELECT 
+	               "order_num"
+	            FROM ( 
+                    SELECT 
+                        ROW_NUMBER() OVER(ORDER BY o."order_time" DESC) AS rnum
+                        , o."order_num" 
+                    FROM 
+                        "order" o
+                    WHERE 
+                        "user_num" = #{userNum}
+                    AND 
+                        "order_time" >= (CURRENT_DATE-#{period}+1)
+	             ) 
+	             WHERE 
+	                (#{firstIndex}+5) > rnum AND rnum >= #{firstIndex}
+	        )
+	        AND 
+	             d."order_num" = o."order_num"
+	        AND 
+	             o."branch_num" = b.BRANCH_NUM
+            AND  
+                 d."product_num"=p.PRODUCT_NUM 
+            AND
+                d."shot_custom"=s.SHOT_CUSTOM
+            ORDER BY 
+                o."order_time" DESC
+                , p.NAME ASC
+    </select>
+        
+    <!-- 과거 주문 내역 갯수 카운트 -->    
+    <select id="countOrder" parameterType="map" resultType="int">
+        SELECT 
+            COUNT(*)
+        FROM 
+              "order" o
+            , "order_detail" d
+        WHERE 
+              o."user_num" = #{userNum}
+        AND      
+              o."order_num" = d."order_num"  
+        AND 
+              o."order_time" >= (CURRENT_DATE - #{period} +1) 
+    </select>
+
+</mapper>

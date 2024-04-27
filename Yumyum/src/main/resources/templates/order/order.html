@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/basic">
+<th:block layout:fragment="title">
+	<title>결제</title>
+</th:block>
+
+<th:block layout:fragment="header">
+	<h4 class="display-3 fw-bolder">O R D E R</h4>
+	<p class="lead fw-normal text-white-50 mb-0"></p>
+</th:block>
+
+
+<th:block layout:fragment="content">
+
+	<div class="container ">
+		<div class="row">
+			<div class="col-sm-6">
+				<!-- 지점명 -->
+				<h2 th:text="${ branchName }" class="text-2xl font-semibold"></h2>
+				<hr style="margin: 20px">
+				<!-- 주문내역 카드 -->
+				<div class="card mb-3" style="max-width: 540px;"
+					th:if="${not #lists.isEmpty( cartList )}"
+					th:each="cart : ${ cartList }">
+					<div class="row g-0">
+						<div class="col-md-4">
+							<img th:src="${ cart.imgPath }" class="img-fluid rounded-start"
+								alt="...">
+						</div>
+						<div class="col-md-8">
+							<div class="card-body">
+								<h5 class="card-title">주문 내역</h5>
+								<span class="card-text" th:text="|${ cart.name }|"></span> 
+								<span class="card-text" th:text="|${ cart.price } 원|"></span><br>
+								<small class="text-muted" 
+										th:if="${ cart.shotCustom }==1">샷 추가 : 기본</small> 
+								<small class="text-muted"
+										th:if="${ cart.shotCustom }==2">샷 추가 : 연하게</small> 
+								<small class="text-muted" 
+										th:if="${ cart.shotCustom }==3">샷 추가 : 샷 추가(+500)</small> 
+								<small class="text-muted"
+										th:if="${ cart.shotCustom }==4">샷 추가 : 2샷 추가(+1,000)</small> 
+								<small class="text-muted" 
+										th:if="${ cart.shotCustom }==5">Bakery</small>
+								<span class="card-text" th:text="|x ${ cart.qty }|"></span><br>
+								<span class="card-text" th:text="|합계 ${cart.totalPrice }원|"></span>
+								<!-- <hr Style="margin-top:10px"> -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr style="margin: 20px">
+
+			</div>
+
+			<!-- 화면 분할 -->
+			<div class="col-sm-6">
+				<!-- 픽업 여부 -->
+				<!-- 결제 시 데이터 테이블에 커밋! -->
+				<div>
+					<h2 class="text-xl font-semibold">픽업 옵션</h2>
+					<br style="margin: 10px"> <input name="pickupOrNot"
+						type="radio" checked class="m-1" value="N">매장 
+					<input name="pickupOrNot" type="radio" class="m-1" value="Y"
+						onclick="pickupBtnAbled()">포장
+				</div>
+				<hr class="my-3">
+
+				<!-- 픽업 시간 -->
+				<div>
+					<h2 class="text-xl font-semibold">픽업 시간</h2>
+					<br style="margin: 10px">
+					<!-- <div class="btn-group" role="group"> -->
+					<div class="d-flex justify-content-around">
+						<button type="button"
+							class="btn btn-outline-secondary button-class1 pickupBtn"
+							th:value="0" disabled="disabled">바로</button>
+						<button type="button"
+							class="btn btn-outline-secondary button-class2 pickupBtn"
+							th:value="10" disabled="disabled">10분 후</button>
+						<button type="button"
+							class="btn btn-outline-secondary button-class3 pickupBtn"
+							th:value="30" disabled="disabled">30분 후</button>
+						<button type="button"
+							class="btn btn-outline-secondary button-class4 pickupBtn"
+							th:value="60" disabled="disabled">1시간 후</button>
+					</div>
+					<!-- </div> -->
+				</div>
+				<hr class="my-3">
+
+				<!-- 보유 쿠폰 목록 -->
+				<div class="mt-4">
+					<h2 class="text-xl font-semibold my-3">할인 쿠폰</h2>
+					<select id="couponList" class="w-70 h-10 p-1"
+						onchange="if (this.selectedIndex) selectCp()">
+						<option>쿠폰을 선택해주세요</option>
+						<option th:if="${not #lists.isEmpty( couponList )}"
+							th:each="coupon, i : ${ couponList }"
+							th:id="'cp'+${coupon.cpNum}" th:value="${coupon.cpNum}"
+							th:text="|${coupon.kind} 쿠폰	 3000원 할인  ~${#strings.substring(coupon.expirationDate, 2, 10)}|">
+						</option>
+					</select>
+					<div id="selectedCouponList"></div>
+				</div>
+				<hr class="my-3">
+
+				<!-- 결제 수단 -->
+				<!-- value 값을 pay_method 데이터로 넘겨 iamport()에 넣으면 된다. -->
+				<h2 class="text-xl font-semibold my-3">결제수단</h2>
+				<input type="radio" name="payMethod" value="card" class="m-1" checked>신용카드 
+				<input type="radio" name="payMethod" value="kakaopay" class="m-1" disabled>카카오페이 
+				<input type="radio" name="payMethod" value="samsung" class="m-1" disabled>삼성페이
+				<hr class="my-3">
+
+				<!-- 결제 금액 -->
+				<div id="calc" class="">
+					<div class="flex justify-end mx-5">
+						<span class="text-xl font-semibold">총 수량</span> 
+						<span class="inline-block text-xl w-32 text-right" th:text="${totalQty}"></span>
+					</div>
+					<div class="flex justify-end mx-5">
+						<span class="text-xl font-semibold">결제 금액</span> 
+						<span class="inline-block text-xl w-32 text-right" th:text="|${totalPrice} 원|" id="totalPrice"></span>
+					</div>
+				</div>
+
+				<div class="flex justify-end pr-5">
+					<!-- 결제의 파라미터로 주문번호, 총액, 결제수단에 따라 Case문 변경되도록 js수정 -->
+					<button type="button" class="btn btn-outline-dark"
+						style="font-size: 1.2em" th:onclick="|javascript:iamport()|">구매</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</th:block>
+
+<th:block layout:fragment="script">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		let cpNumList = [];
+		let couponCnt = 0;
+		let pickupTime = 0;
+		let totalPrice = parseInt(/*[[ ${totalPrice} ]]*/);
+
+		// 픽업 옵션 포장 선택 시, 픽업 시간 활성화 
+		function pickupBtnAbled() {
+			$('.pickupBtn').attr("disabled", false);
+		}
+
+		//픽업 시간 선택 시, 버튼 색상 변경
+		$(function () {
+			$('.pickupBtn').click(function () {
+
+				if ($('.pickupBtn').hasClass('btn-outline-secondary')) {
+					$('.pickupBtn').removeClass('btn-outline-secondary');
+				} else {
+					$('.pickupBtn').removeClass('btn-outline-primary');
+				}
+
+				$('.pickupBtn').not($(this)).addClass('btn-outline-secondary');
+				$(this).addClass('btn-outline-primary');
+				$(this).addClass('font-semibold');
+				// 픽업시간 설정
+				pickupTime = $(this).val();
+			});
+		}); /* end of function */
+
+
+		// 선택한 쿠폰 가져오기
+		function selectCp() {
+			let selectedCp = $("select option:selected").text();
+			let cpNum = $("select option:selected").val();
+
+			let html = `
+				<div class="m-1" id="${cpNum}" value="10">
+					<small class="text-slate-700">${selectedCp}</small>
+					<button onclick="deleteCp(${cpNum})">
+					<img aria-hidden="true" src="https://cdn3.iconfinder.com/data/icons/status/100/close_1-512.png" class='w-2 h-2'>
+					</button>
+				</div>	
+				`;
+
+			$('select option:selected').attr('disabled', true);
+
+			//타겟의 첫번째 id값과 선택한 coupon의 cpNum값을 비교하여 실행
+			if ($('#selectedCouponList').children('div').attr('id') != cpNum) {
+				$('#selectedCouponList').prepend(html);
+			}
+			selectedCpNum();
+		} /* end of 'selectCp' function */
+
+
+		// 쿠폰 삭제
+		function deleteCp(cpNum) {
+			$("#" + cpNum).remove();
+			$("#cp" + cpNum).attr('disabled', false);
+			selectedCpNum();
+		} /* end of 'deleteCp' function */
+
+
+		// 선택한 쿠폰 번호 json 업데이트 / 결제금액 업데이트
+		function selectedCpNum() {
+			let selectedCouponList = $("#selectedCouponList").children('div');
+			cpNumList = [];
+			couponCnt = 0;
+			for (let coupon of selectedCouponList) {
+				params = {"cpNum": parseInt(coupon.id)}
+				cpNumList.push(params);
+				couponCnt++;
+			}
+
+			// 쿠폰 할인 금액 계산
+			totalPrice = parseInt(/*[[ ${totalPrice} ]]*/) - couponCnt * 3000;
+			if (totalPrice <= 0) {
+				totalPrice = 0;
+				$('select option').attr('disabled', true);
+			}
+			$("#totalPrice").text(totalPrice + " 원");
+		} /* end of 'selectedCpNum' function */
+
+
+		// 구매 버튼 클릭 시, 결제 및 페이지 이동, DB 업데이트
+		function iamport() {
+			let payMethod = $("input[name=payMethod]:checked").val();
+			let timeStamp = new Date().getTime();
+			console.log()
+			
+			//https://github.com/iamport/iamport-manual/blob/master/%EB%B9%84%EC%9D%B8%EC%A6%9D%EA%B2%B0%EC%A0%9C/example/inicis-request-billing-key.md
+			// 결제금액이 0인경우
+
+			//가맹점 식별코드
+			let IMP = window.IMP;
+			IMP.init('imp46753753');
+			IMP.request_pay({
+				pg: 'kcp'
+				, pay_method: payMethod //결제 방법 선택
+				,merchant_uid: timeStamp
+				,name: "주문번호 " + timeStamp //결제창에서 보여질 이름
+				, amount: totalPrice //실제 결제되는 가격
+				, buyer_email: 'example@yumyumcoffee.co.kr'
+				, buyer_tel: '010-1234-5678'
+				//, costomer_id:'imp46753753'
+			}, function (rsp) {
+				// iframe 방식으로 호출된 결제창에서 결제 후 호출되는 콜백 함수
+				console.log(rsp);
+				if (rsp.success) {
+				// 결제 요청 성공, 결제 정보 조회 및 검증
+				
+		            $.ajax({
+		                type: 'POST',
+		                url: '/verifyiamport/'+rsp.imp_uid,
+		            /*    beforeSend: function(xhr){
+		                    xhr.setRequestHeader(header, token);
+		                }*/
+		            }).done(function(result){
+		                // rsp.paid_amount와 result.response.amount(서버 검증) 비교 
+		                if(rsp.paid_amount === result.response.amount){
+						console.log("검증 성공")
+						// 검증 성공
+							let payInfo =
+							{
+								"impUid": rsp.imp_uid 						//아임포트 고유 결제번호
+								, "merchantUid": rsp.merchant_uid 			//가맹점에서 생성/관리하는 고유 주문번호
+								, "payMethod": rsp.pay_method 				//결제수단
+								, "paidAmount": rsp.paid_amount 				//결제금액
+								, "applyNum": rsp.apply_num					//카드사 승인번호(신용카드결제에 한하여 제공)
+							};
+							let pickupYn = $("input[name=pickupOrNot]:checked").val();
+	
+							let params =
+							{
+								"totalQty":parseInt(/*[[${ totalQty }]]*/)
+								, "totalPrice": parseInt(rsp.paid_amount)
+								, "pickupYn": pickupYn
+								, "pickupTime": parseInt(pickupTime)
+								, "cartList": /*[[${ cartList }]]*/null
+								, "couponList": cpNumList
+								, "payment": payInfo
+							};
+					
+							pageGoPost({
+								url: "/orderconfirm",	//이동할 페이지 주소
+							    target: "_self",
+							    vals: 
+							    	[	//전달할 인수
+								    	["totalQty",/*[[${ totalQty }]]*/]
+								    	, ["totalPrice",totalPrice]
+								    	, ["pickupYn",pickupYn]
+								    	, ["pickupTime",pickupTime]
+								    	, ["cartList",JSON.stringify(/*[[${ cartList }]]*/)]
+								    	, ["couponList",JSON.stringify(cpNumList)]
+								    	, ["payment",JSON.stringify(payInfo)]
+									]
+							}); 
+						} else{
+							alert("결제에 실패했습니다."+"에러코드 : "+rsp.error_code+"에러 메시지 : "+rsp.error_message);
+						} 
+					}); /* end of 검증 ajax*/
+				} /*end of 아임포트 결제요청 성공 if*/
+			}); /* end of callback funcion*/
+		} /* end of 'payment' function */
+
+
+		// form, submit을 이용하여 data를 post방식으로 전송 / 페이지 이동
+		function pageGoPost(data) {
+			let insdoc = "";
+
+			for (var i = 0; i < data.vals.length; i++) {
+				insdoc += "<input type='hidden' name='" + data.vals[i][0] + "' value='" + data.vals[i][1] + "'>";
+			}
+
+			let goform = $("<form>", {
+				method: "post"
+				, action: data.url
+				, target: data.target
+				, html: insdoc
+			}).appendTo("body");
+
+			goform.submit();
+		} /* end of 'pageGoPost' function */
+
+
+		/*]]>*/
+	</script>
+</th:block>
+
+</html>

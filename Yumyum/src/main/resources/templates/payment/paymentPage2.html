@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="yumyum/layout/basic">
+	
+<head>
+<!-- jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+
+
+</head>
+<th:block layout:fragment="title">
+	<title>YumYum Coffee</title>
+</th:block>
+<th:block layout:fragment="header">
+	<h4 class="display-3 fw-bolder">My Page</h4>
+	<p class="lead fw-normal text-white-50 mb-0"></p>
+</th:block>
+
+<!-- <th:block layout:fragment="modal">
+	<div id="couponModal" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="commentModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<ul id="coupon-list"></ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block> -->
+
+<th:block layout:fragment="content">
+        <div class="jumbotron">
+            <h1>결제 기능</h1>
+            <p>Payment</p>
+        </div>
+        
+        <!-- <div class="container">
+            <div class="btn_wrap text-right">
+                <a  class="btn btn-dark">다중수정</a>
+            </div><br> -->
+            
+            <table class="table table-hover text-center">
+                <thead>
+                    <tr>
+                        <!-- <th class="col-sm-1" >주문번호</th>
+                        <th class="col-sm-1">고객번호</th>
+                        <th class="col-sm-1">지점번호</th>
+                        <th class="col-sm-1">픽업유무</th> -->
+                        <th class="col-sm-2">결제가격</th>
+                        <!-- <th class="col-sm-1">결제</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row : ${totalPrice}">
+<!--                     <tr th:if="${not #lists.isEmpty( totalPrice )}" th:each="row : ${ totalPrice }" > -->
+                        <!-- <td scope="row" th:text="${row.orderNum}"></td>
+                        <td class="text-left" th:text="${row.userNum}"></td>
+                        <td class="text-left" th:text="${row.branchNum}"></td>
+                        <td class="text-left" th:if="${row.pickupYn}=='N'" th:text="매장"></td>
+                        <td class="text-left" th:if="${row.pickupYn}=='Y'" th:text="픽업"></td> -->
+                        <td th:text="${row}"></td>
+                        <!-- <td>
+                            <button th:onclick="|location.href='@{/payment.do(orderNum=${row.orderNum})}'|">결제하기</button>
+                        </td> -->
+                    </tr>
+
+                    <!-- <tr th:unless="${not #lists.isEmpty( totalPrice )}">
+                        <td colspan="5">조회된 결과가 없습니다.</td>
+                    </tr> -->
+                </tbody>
+            </table>
+
+            <!-- <div class="btn_wrap text-right">
+                <a th:href="@{/product/write.do}" class="btn btn-dark">제품등록</a>
+            </div>
+        </div> -->
+        
+    </th:block>
+    
+    <!-- 자바스크립트 -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+            /*<![CDATA[*/
+            console.log(row);
+             /*[- end of function -]*/
+            /*]]>*/
+        </script>
+</th:block>
+</html>

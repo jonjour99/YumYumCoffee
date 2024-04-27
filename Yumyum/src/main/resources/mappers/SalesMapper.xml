@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yum.mapper.SalesMapper">
+
+	<select id="selectSales" parameterType="com.yum.domain.SalesDTO" resultType="com.yum.domain.SalesDTO">
+	    <!-- 일별 -->
+	    SELECT 
+	         "order_time"
+	        , sum("total_price") as sum
+	    FROM
+	        "order"
+	    GROUP BY "order_time"
+	    ORDER BY "order_time"
+	    <!-- 월별  -->
+	   <!--  SELECT 
+			TO_CHAR("order_time",'yyyy-mm') as month
+			,sum("total_price") as sum
+		FROM "order"
+		GROUP BY TO_CHAR("order_time",'yyyy-mm') -->
+	</select>
+	
+	<select id="selectSalesTotalCount" parameterType="com.yum.domain.SalesDTO" resultType="int">
+	   SELECT
+	       COUNT(*)
+	   FROM 
+	       "order"
+	</select>
+
+</mapper>

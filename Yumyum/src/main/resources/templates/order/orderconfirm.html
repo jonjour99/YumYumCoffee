@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+    <th:block layout:fragment="title">
+        <title>YumYum Coffee</title>
+    </th:block>
+ 
+    <th:block layout:fragment="header">
+        <h4 class="display-6 fw-bolder"></h4>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+       <div>
+       		<p th:if="${msg}=='commit'">주문이 완료되었습니다.</p>
+       		<p th:if="${msg}=='rollback'">주문이 취소되었습니다.</p>
+       </div>
+    </th:block>
+    <!-- 만약 ${msg}가 rollback이면 환불 요청하는 ajax 호출 -->
+</html>

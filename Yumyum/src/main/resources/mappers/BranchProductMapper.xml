@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yum.mapper.BranchProductMapper">
+
+    <sql id="branchProductColumns">
+           branch_num
+          ,product_num
+          ,hiden_yn
+    </sql>
+    
+    
+    <select id="selectBranchProductList" parameterType="long" resultType="com.yum.domain.ProductDTO">
+
+         SELECT *
+		  FROM 
+		       PRODUCT p 
+		  WHERE 
+		       p.PRODUCT_NUM  IN (   
+		     SELECT PRODUCT_NUM 
+		     FROM BRANCH_PRODUCT  
+		     WHERE BRANCH_NUM = #{branchNum}
+		     AND HIDEN_YN ='N'
+		);
+    </select>
+    
+    
+    <!-- 지점별 제품화면 목록 -->
+    <select id="selectBPList" parameterType="com.yum.domain.BranchProductDTO" resultType="com.yum.domain.BranchProductDTO">
+        <!-- SELECT 
+            b.product_num,
+            b.branch_num,
+            p.name,
+            b.hiden_yn
+        FROM 
+            product p,branch_product b
+        WHERE
+            p.product_num=b.product_num
+        AND
+            branch_num=#{branchNum} -->
+        SELECT
+            NUM
+            ,product_num
+            ,name
+            ,branch_num
+            ,hiden_yn
+        FROM (
+            SELECT 
+              ROW_NUMBER() OVER (ORDER BY p.product_num) NUM
+              ,p.name
+              ,b.*
+            FROM product p, branch_product b
+                WHERE
+                 p.product_num=b.product_num
+                AND
+                 branch_num=#{branchNum}
+                ORDER BY p.product_num
+        )
+        WHERE NUM BETWEEN #{paginationInfo.firstRecordIndex} AND #{paginationInfo.lastRecordIndex}
+    </select>
+    
+    <select id="selectBProductTotalCount" parameterType="com.yum.domain.BranchProductDTO" resultType="int">
+        SELECT 
+            COUNT(*)
+        FROM 
+            branch_product
+        WHERE
+            branch_num=(
+               SELECT 
+                  b.BRANCH_NUM 
+               FROM 
+                  BRANCH b 
+               WHERE 
+                  MANAGER_NUM =#{userNum}
+            )
+    </select>
+    
+    
+    <update id="updateBProductState" parameterType="com.yum.domain.BranchProductDTO">
+        UPDATE branch_product
+        SET
+            hiden_yn=#{hidenYn}
+        WHERE
+            product_num=#{productNum}
+        AND
+            branch_num=(
+               SELECT 
+                  b.BRANCH_NUM 
+               FROM 
+                  BRANCH b 
+               WHERE 
+                  MANAGER_NUM =#{branchNum}
+            )
+    </update>
+    
+</mapper>

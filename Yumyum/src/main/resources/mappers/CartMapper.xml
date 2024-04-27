@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yum.mapper.CartMapper">
+
+	<sql id="cartColums">
+		USER_NUM
+		, PRODUCT_NUM
+		, BRANCH_NUM
+		, SHOT_CUSTOM
+		, TOTAL_PRICE		
+	</sql>
+	
+
+	<!-- 장바구니에 제품 추가 -->
+	<insert id ="insertCart" parameterType="com.yum.domain.CartDTO">
+		INSERT into Cart (
+		<include refid="cartColums"></include>
+		)VALUES(
+			  #{userNum}
+			, #{productNum}
+			, #{branchNum}
+			, #{shotCustom}
+			, (SELECT 
+                    (p.PRICE+s.PRICE)
+                FROM
+                    PRODUCT p
+                    , SHOTCUSTOM s
+                WHERE
+                    p.PRODUCT_NUM = #{productNum}
+                AND
+                    s.SHOT_CUSTOM = #{shotCustom})
+				)
+	</insert>
+	
+	
+	<!-- 제품 수량 수정 -->
+	<update id="updateCartQty" parameterType="com.yum.domain.CartDTO">
+		UPDATE 
+			CART
+		SET 
+			QTY = #{qty}
+			, TOTAL_PRICE= 	
+				(SELECT 
+					(p.PRICE+s.PRICE)*#{qty}
+				FROM
+					PRODUCT p
+					, SHOTCUSTOM s
+				WHERE
+					p.PRODUCT_NUM = #{productNum}
+ 				AND
+					s.SHOT_CUSTOM = #{shotCustom})
+		WHERE 
+			USER_NUM = #{userNum} 
+		AND 
+			PRODUCT_NUM = #{productNum}
+		AND 
+			BRANCH_NUM = #{branchNum}
+		AND 
+			SHOT_CUSTOM = #{shotCustom}
+	</update>
+	
+	   <!--장바구니에 제품이 있는 상태에서 같은 제품 추가 -->
+    <update id="addCart" parameterType="com.yum.domain.CartDTO">
+        UPDATE 
+            CART
+        SET 
+            QTY = #{qty}
+            , TOTAL_PRICE=  
+                (SELECT 
+                    (p.PRICE+s.PRICE)*#{qty}
+                FROM
+                    PRODUCT p
+                    , SHOTCUSTOM s
+                WHERE
+                    p.PRODUCT_NUM = #{productNum}
+                AND
+                    s.SHOT_CUSTOM = #{shotCustom})
+            , INSERT_TIME=CURRENT_DATE
+        WHERE 
+            USER_NUM = #{userNum} 
+        AND 
+            PRODUCT_NUM = #{productNum}
+        AND 
+            BRANCH_NUM = #{branchNum}
+        AND 
+            SHOT_CUSTOM = #{shotCustom}
+    </update>
+			
+	<!-- 제품이 장바구니에 있는지 확인 -->
+	<select id="selectCart" parameterType="com.yum.domain.CartDTO" resultType="com.yum.domain.CartDTO">
+		SELECT
+			QTY
+		FROM
+			CART
+		WHERE 
+			USER_NUM = #{userNum} 
+		AND 
+			PRODUCT_NUM = #{productNum}
+		AND 
+			BRANCH_NUM = #{branchNum}
+		AND 
+			SHOT_CUSTOM = #{shotCustom}
+	</select>
+	
+	<!-- 장바구니에서 제품 삭제 -->
+	<delete id="deleteCart" parameterType="com.yum.domain.CartDTO">
+		DELETE FROM CART
+		WHERE 
+			USER_NUM = #{userNum} 
+		AND 
+			PRODUCT_NUM = #{productNum}
+		AND 
+			BRANCH_NUM = #{branchNum}
+		AND 
+			SHOT_CUSTOM = #{shotCustom}
+	</delete>
+	
+	<!-- 카트 목록 -->
+	<select id="selectCartList" parameterType="map" resultType="com.yum.domain.CartDTO">
+		SELECT 
+	 		c.*
+	 		, p.NAME
+	 		, p.PRICE 
+	 		, i.img_path
+	 	FROM 
+	 		CART c 
+	 		, PRODUCT p 
+	 		, IMG i
+	 	WHERE 
+	 		c.USER_NUM = #{userNum}
+	 	AND 
+	 		c.BRANCH_NUM = #{branchNum}
+	 	AND 
+	 		c.PRODUCT_NUM = p.PRODUCT_NUM 
+	 	AND 
+	 		c.PRODUCT_NUM = i.PRODUCT_NUM
+	 	ORDER BY 
+	 		c.INSERT_TIME DESC
+	</select>
+	
+	<!-- 해당 지점 장바구니에 제품있는지 확인 -->
+	<select id="countTotalCart" parameterType="map" resultType="Long">
+		SELECT 
+			COUNT(*)
+		FROM 
+			CART
+		WHERE 
+			USER_NUM = #{userNum} 
+	  	AND 
+	  		BRANCH_NUM = #{branchNum}
+  	  	ORDER BY 
+  	  		INSERT_TIME DESC
+	</select>
+	
+	<!-- 카트 확인 -->
+ 	<select id="checkCart" parameterType="com.yum.domain.CartDTO" resultType="com.yum.domain.CartDTO">
+	   SELECT *
+        FROM
+            CART
+        WHERE 
+            USER_NUM = #{userNum} 
+        AND 
+            PRODUCT_NUM = #{productNum}
+        AND 
+            BRANCH_NUM = #{branchNum}
+        AND 
+            SHOT_CUSTOM = #{shotCustom}
+	</select> 
+	
+		<!-- 지점명 가져오기 -->
+ 	<select id="selectBranchName" parameterType="Long" resultType="String">
+	   	SELECT BRANCH_NAME
+        FROM
+            BRANCH
+        WHERE 
+            BRANCH_NUM = #{branchNum} 
+	</select> 
+	
+</mapper>

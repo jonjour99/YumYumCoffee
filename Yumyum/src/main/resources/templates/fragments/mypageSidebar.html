@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<th:block th:fragment="sidebar">
+<div class=" flex flex-wrap content-between bg-slate-700 p-4 w-48 col-md-4 min-h-[60vh]">
+	<div>
+		<h4
+			class="text-white font-semibold mb-2 text-xl leading-6 dark:text-slate-100">
+			마이 페이지</h4>
+		<ul>
+			<li>
+				<p class="block py-1 text-white cursor-pointer" id="aUpdateMyInfo"
+					onclick="openModalId()">내 정보 수정</p>
+			</li>
+			<li><a th:href="@{/orderhistory}"
+				class="block py-1 text-white cursor-pointer"> 과거 주문 내역 </a></li>
+			<li><a th:href="@{/quit}"
+				class="block py-1 text-white cursor-pointer"> 탈퇴하기 </a></li>
+		</ul>
+	</div>
+
+	<!--   user.authority
+	        관리자=3
+	        지점 매니저=2
+	        일반 유저=1 -->
+	<th:block th:if="${member.authority}!=1">
+		<div>
+			<h4
+				class="text-white font-semibold mb-2 mt-16 text-xl leading-6 dark:text-slate-100 ">
+				관리자 페이지</h4>
+			<ul>
+				<!--     지점장 메뉴 관리  -->
+				<th:block th:if="${member.authority}==2">
+					<li><a th:href="@{/product/list2}"
+						class="block py-1 text-white cursor-pointer"> 메뉴 관리 </a></li>
+					<li><a class="block py-1 text-white cursor-pointer"> 매출 관리
+					</a></li>
+				</th:block>
+
+				<!--  관리자만 접근 가능 -->
+				<th:block th:if="${member.authority}==3">
+					<li><a th:href="@{/product/list}"
+						class="block py-1 text-white cursor-pointer"> 메뉴 관리 </a></li>
+					<li><a class="block py-1 text-white cursor-pointer"> 매출 관리
+					</a></li>
+					<li><a class="block py-1 text-white cursor-pointer"> 게시판
+							관리 </a></li>
+					<!-- <li><a class="block py-1 text-white cursor-pointer"> 회원 관리 </a></li>  -->
+				</th:block>
+			</ul>
+		</div>
+</div>
+</th:block>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+
+    <th:block layout:fragment="title">
+        <title>제품상세보기</title>
+    </th:block>
+
+    <th:block layout:fragment="header">
+		<h4 class="display-3 fw-bolder">제품 상세보기</h4>
+		<p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+
+        <div>
+           <!-- <h2>제품 정보</h2> -->
+           <p> 제품정보를 확인하세요.</p>
+        </div>
+    
+    <div class="container mt-3">
+      <div class="card">
+        <div class="card-body">
+            <th:block>
+               <form class="form-horizontal form-view"  th:object="${product}">
+                     
+                <!-- <div class="form-group"> -->
+                <div class="form-group">
+                    <label for="codeId" class="col-2 control-label">분류</label>
+                    <div class="col-sm-12">
+                       <p class="form-control"  th:text="*{codeId}"></p>
+                    </div>  
+                </div>
+                    <!-- <span class="col-sm-6">
+                       <select onchange="categoryChange(this)">
+                           <option>선택해주세요</option>
+                           <option value="b">음료</option>
+                           <option value="d">베이커리</option>
+                       </select>
+                       
+                       <select id="good" name="codeId" th:text="*{codeId}">
+                           <option >------</option>
+                       </select>
+                    </span> -->
+                    
+                <!-- </div> -->
+                
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">제품명</label>
+                    <div class="col-sm-12">
+                        <p th:text="*{name}" class="form-control"></p>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="price" class="col-sm-2 control-label">가격</label>
+                    <div class="col-sm-12">
+                        <p th:text="*{price}" class="form-control"></p>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="info" class="col-sm-2 control-label">상세정보</label>
+                    <div class="col-sm-12">
+                        <p th:text="*{info}" class="form-control"></p>
+                    </div>
+                </div>
+                
+                <!-- <div class="form-group">
+                    <label for="info" class="col-sm-2 control-label">이미지</label>
+                    <div class="col-sm-12">
+                        <img src="*{imgPath}">
+                    </div>
+                </div> -->
+                
+                <div th:unless="${#lists.isEmpty( fileList )}" th:each="row, status : ${fileList}" data-name="fileDiv" class="form-group filebox bs3-primary">
+                    <label th:for="|file_${status.index}|" class="col-sm-10 control-label">이미지 : <span th:text="${row.originalName}">이미지명</span></label>
+                    <div class="col-sm-10">
+                    
+                        <img th:src="${row.imgPath}" width="400px" height="400px">
+                    </div>
+                </div>
+    
+                <div id="btnDiv" class="btn_wrap text-center">
+                    <a th:href="@{/product/list}" class="btn btn-outline-secondary waves-light">뒤로가기</a>
+                    <a th:href="@{/product/write( productNum=${product.productNum} )}" class="btn btn-primary waves-effect waves-light">수정하기</a>
+                    <button type="button" class="btn btn-danger bg-red-600" th:onclick="deleteProduct([[ ${product.productNum} ]])">삭제하기</button>
+                </div>
+            </form>
+           </th:block>
+        </div>
+      </div>
+    </div>
+    
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            function deleteProduct(productNum) {
+                if (confirm(productNum + "번 게시글을 삭제할까요?")) {
+                    var uri = /*[[ @{/product/delete} ]]*/null;
+                    var html = "";
+
+                    html += '<form name="dataForm" action="'+uri+'" method="post">';
+                        html += '<input type="hidden" name="productNum" value="'+productNum+'" />';
+                    html += '</form>';
+
+                    $("body").append(html);
+                    document.dataForm.submit();
+                }
+            }
+            /*[- end of function -]*/
+
+            /*]]>*/
+        </script>
+
+    
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+    <th:block layout:fragment="title">
+        <title>YumYum Coffee</title>
+    </th:block>
+ 
+    <th:block layout:fragment="header">
+        <h4 class="display-6 fw-bolder">오시는 길</h4>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+    
+<style>
+#kakaoMap a {
+	float: left; 
+	height: 15px; 
+	padding-top: 1px; 
+	padding-left: 1px; 
+	line-height: 15px; 
+	color: #000; 
+	text-decoration: none;
+}
+</style>
+		<!-- 서울지도 -->
+<div id="board-list">
+    <div class="container">
+		<table class="board-table" id="seoul_map" style="display: none; width:100%;">
+			<tr><td style="font: normal normal 400 12px/normal dotum, sans-serif; color: #333; position: relative">
+				<div>
+					<a href="https://map.kakao.com/?urlX=479321.0&amp;urlY=1116340.0&amp;itemId=1742826337&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0%20%EC%84%9C%EC%9A%B8&amp;srcid=1742826337&amp;map_type=TYPE_MAP&amp;from=roughmap"
+						target="_blank">
+					<img class="map" src="http://t1.daumcdn.net/roughmap/imgmap/a9b4f0fb89c1c1fb71a3bc155de5de11433f6b61de8699be98a946d72aef4dc3"
+						width="1100px" height="550px" style="border: 1px solid #ccc; width:100%;"></a>
+				</div>
+				<div style="overflow: hidden; padding: 7px 11px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 0px 0px 2px 2px; background-color: rgb(249, 249, 249);">
+					<a href="https://map.kakao.com" target="_blank"
+						style="float: left;">
+					<img src="//t1.daumcdn.net/localimg/localimages/07/2018/pc/common/logo_kakaomap.png"
+						width="72" height="16" alt="카카오맵" style="display: block; width: 72px; height: 16px"></a>
+					<div id="kakaoMap" style="float: right; position: relative; top: 1px; font-size: 14px;">
+						<a target="_blank" href="https://map.kakao.com/?from=roughmap&amp;srcid=1742826337&amp;confirmid=1742826337&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0%20%EC%84%9C%EC%9A%B8&amp;rv=on"
+							>로드뷰&nbsp;&nbsp;</a>
+						<span>  </span>
+						<a target="_blank" href="https://map.kakao.com/?from=roughmap&amp;eName=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0%20%EC%84%9C%EC%9A%B8&amp;eX=479321.0&amp;eY=1116340.0"
+							>길찾기&nbsp;&nbsp;</a>
+						<span></span>
+						<a target="_blank" href="https://map.kakao.com?map_type=TYPE_MAP&amp;from=roughmap&amp;srcid=1742826337&amp;itemId=1742826337&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0%20%EC%84%9C%EC%9A%B8&amp;urlX=479321.0&amp;urlY=1116340.0"
+							>지도 크게 보기</a>
+					</div>
+				</div>
+			</td></tr>
+			<tr><td class="card" align=center>
+				<table class="table text-center" style="width:100%; height:150px;">
+					<tr class="lead">
+						<th><b>연락처</b></th>
+						<th><b>주소</b></th>
+						<th><b>찾아오시는길</b></th></tr>
+						
+					<tr><td>02-3667-3688</td>
+						<td>서울 영등포구 영중로8길 6 6층</td>
+						<td><pre>1호선 영등포역 5번출구 이용 300m
+5호선 영등포시장역 3번출구 이용 500m
+						</pre></td></tr>
+				</table>
+			</td></tr>
+		</table>
+	</div>
+</div>
+
+		<!-- 수원지도 -->
+<div id="board-list">
+    <div class="container">
+		<table class="board-table" id=suwon_map style="display: none; width:100%;">
+			<tr><td style="font: normal normal 400 12px/normal dotum, sans-serif; color: #333; position: relative">
+				<div>
+					<a href="https://map.kakao.com/?urlX=506100.0&amp;urlY=1049382.0&amp;itemId=322722768&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;srcid=322722768&amp;map_type=TYPE_MAP&amp;from=roughmap"
+						target="_blank">
+					<img class="map" src="http://t1.daumcdn.net/roughmap/imgmap/f91b863b109e74ffcb5590b2a328a8d7ee5e48cfe6bc3123b6018b10672fc0bc"
+						width="1100px" height="550px" style="border: 1px solid #ccc; width:100%;"></a>
+				</div>
+			</td></tr>
+			<tr><td>
+				<div style="overflow: hidden; padding: 7px 11px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 0px 0px 2px 2px; background-color: rgb(249, 249, 249);">
+					<a href="https://map.kakao.com" target="_blank"
+						style="float: left;">
+					<img src="//t1.daumcdn.net/localimg/localimages/07/2018/pc/common/logo_kakaomap.png"
+						width="72" height="16" alt="카카오맵" style="display: block; width: 72px; height: 16px"></a>
+					<div id="kakaoMap" style="float: right; position: relative; top: 1px; font-size: 14px;">
+						<a target="_blank" href="https://map.kakao.com/?from=roughmap&amp;srcid=322722768&amp;confirmid=322722768&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;rv=on"
+							>로드뷰&nbsp;&nbsp;</a>
+						<span>  </span>
+						<a target="_blank" href="https://map.kakao.com/?from=roughmap&amp;eName=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;eX=506100.0&amp;eY=1049382.0"
+							>길찾기&nbsp;&nbsp;</a>
+						<span>  </span>
+						<a target="_blank" href="https://map.kakao.com?map_type=TYPE_MAP&amp;from=roughmap&amp;srcid=322722768&amp;itemId=322722768&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;urlX=506100.0&amp;urlY=1049382.0"
+							>지도 크게 보기</a>
+					</div>
+				</div>
+			</td></tr>
+			<tr><td class="card" align=center>
+				<table class="table text-center" style="width:100%; height:100px;">
+					<tr class="lead">
+						<th><b>연락처</b></th>
+						<th><b>주소</b></th>
+						<th><b>찾아오시는길</b></th></tr>
+						
+					<tr><td>031-239-5855</td>
+						<td>경기 수원시 팔달구 중부대로 100</td>
+						<td>분당선 매교역 7번출구이용 도보 26분</td></tr>
+				</table>
+			</td></tr>
+		</table>
+	</div>
+</div>
+
+		<!-- 천안지도 -->
+<div id="board-list">
+    <div class="container text-center" align="center">
+		<table class="board-table" id="cheonan_map" style="display: none; width:100%;">
+			<tr><td style="font: normal normal 400 12px/normal dotum, sans-serif; color: #333; position: relative">
+				<div>
+					<a href="https://map.kakao.com/?urlX=532830.0&amp;urlY=919106.0&amp;itemId=808699153&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;srcid=808699153&amp;map_type=TYPE_MAP&amp;from=roughmap" target="_blank">
+					<img class="map" src="http://t1.daumcdn.net/roughmap/imgmap/75d8451c3da3359e6b67c6d663bce97b8cbbd76da37f4d59cd76cab74b36979f"
+						width="1100px" height="550px" style="border: 1px solid #ccc; width:100%;"></a>
+				</div>
+			</td></tr>
+			<tr><td>
+				<div align=center style="overflow: hidden; padding: 7px 11px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 0px 0px 2px 2px; background-color: rgb(249, 249, 249);">
+					<a href="https://map.kakao.com" target="_blank" style="float: left;">
+					<img src="//t1.daumcdn.net/localimg/localimages/07/2018/pc/common/logo_kakaomap.png"
+						width="72" height="16" alt="카카오맵" style="display: block; width: 72px; height: 16px"></a>
+					<div id="kakaoMap" style="float: right; position: relative; top: 1px; font-size: 14px;">
+						<a target="_blank" href="https://map.kakao.com/?from=roughmap&amp;srcid=808699153&amp;confirmid=808699153&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;rv=on"
+							>로드뷰&nbsp;&nbsp;</a>
+						<span>  </span>
+						<a target="_blank" href="https://map.kakao.com/?from=roughmap&amp;eName=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;eX=532830.0&amp;eY=919106.0"
+							>길찾기&nbsp;&nbsp;</a>
+						<span>  </span>
+						<a target="_blank" href="https://map.kakao.com?map_type=TYPE_MAP&amp;from=roughmap&amp;srcid=808699153&amp;itemId=808699153&amp;q=%ED%9C%B4%EB%A8%BC%EA%B5%90%EC%9C%A1%EC%84%BC%ED%84%B0&amp;urlX=532830.0&amp;urlY=919106.0"
+							>지도 크게 보기</a>
+					</div>
+				</div>
+			</td></tr>
+			<tr><td class="card" align=center>
+				<table class="table text-center" style="width:100%; height:100px;">
+					<tr class="lead">
+						<th><b>연락처</b></th>
+						<th><b>주소</b></th>
+						<th><b>찾아오시는길</b></th></tr>
+						
+					<tr><td>041-561-1122</td>
+						<td>충남 천안시 동남구 대흥로 215 7층</td>
+						<td>1호선 천안역 3번출구 이용 도보 5분</td></tr>
+				</table>
+			</td></tr>
+		</table>
+	</div>
+</div>
+		
+    </th:block>
+    
+    <th:block layout:fragment="script">
+	<script src='https://code.jquery.com/jquery-3.5.0.js'></script>
+	<script th:inline="javascript">
+		/*<![CDATA[ */
+	
+	let branchNum = /*[[${branchNum}]]*/null;
+	$(document)
+	.ready(function(){
+		if(branchNum == null){
+			document.location="/yumyum/branch";
+			
+		} else if(branchNum == 1){
+			$("#suwon_map").hide();
+			$("#cheonan_map").hide();
+			$("#seoul_map").show();
+			
+		} else if(branchNum == 2){
+			$("#suwon_map").show();
+			$("#cheonan_map").hide();
+			$("#seoul_map").hide();
+			
+		} else if(branchNum == 3){
+			$("#suwon_map").hide();
+			$("#cheonan_map").show();
+			$("#seoul_map").hide();
+			
+		}
+	})
+	
+		/*[- end of function -]*/
+
+		/*]]>*/
+	</script>
+	</th:block>
+</html>

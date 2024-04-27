@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="modal">
+	<style>
+.btn:focus, .btn:active {
+	outline: none !important;
+	box-shadow: none;
+}
+
+.form-check-input {
+	border-radius: 50%;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+.form-check-input:checked {
+	background-color: #5e5e5e;
+	border-color: #5e5e5e;
+}
+</style>
+	<div class="portfolio-modal modal fade " id="MyModal" tabindex="-1"
+		role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-12">
+							<div class="modal-body p-4">
+								<div class="row">
+									<div class="col-lg-6 mb-5">
+
+										<!-- Project details-->
+										<input type="hidden" id="modal-productNum" >
+										<div class="image">
+											<img src="" class="img-fluid img-thumbnail"
+												id="modal-imgPath">
+										</div>
+									</div>
+									<div class="col-lg-6">
+										<h1 class="mt-5 mb-2 text-left"
+											style="font-size: 2.0rem; font-weight: bold;" id="modal-name">
+											<!-- 아메리카노 -->
+										</h1>
+										<hr>
+										<p class="mt-2" style="font-size: 1.0rem; font-weight: 400;"
+											id="modal-info"></p>
+										<h2 id="modal-price"
+											style="margin-top: 50px; font-weight: bold; float: right; margin-bottom: 30px"></h2>
+									</div>
+									
+									<div class="col-lg-12 mt-2" id="customDiv">
+										<h2 class="text-uppercase my-3 pl-3"
+											style="font-size: 1.2rem; font-weight: bold;">샷 추가</h2>
+										<hr>
+										<!-- 샷 커스텀 선택 -->
+										<div class="p-3">
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="option"
+													value="1" id="option1" checked> <label
+													class="form-check-label" for="flexRadioDefault1">
+													기본 </label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="option"
+													value="2" id="option2"> <label
+													class="form-check-label" for="flexRadioDefault1">
+													연하게 </label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="option"
+													value="3" id="option3"> <label
+													class="form-check-label" for="flexRadioDefault1"> 
+													샷 추가(+500) </label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="option"
+													value="4" id="option4"> <label
+													class="form-check-label" for="flexRadioDefault1"> 
+													2샷 추가(+1,000) </label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="option"
+													value="5" id="option5"> <label
+													class="form-check-label" for="flexRadioDefault1"></label>
+											</div>
+									</div>
+										</div>
+											<div class="text-center">
+												<button class="btn btn-outline-dark me-5" type="button"
+													onclick="addCart(), openModal()">
+													<i class="fas fa-xmark me-1"></i> 장바구니
+												</button>
+	
+												<button class="btn btn-outline-dark ml-5"
+													data-bs-dismiss="modal" type="button" 
+													onclick="purchase(1)">
+													<i class="fas fa-xmark me-1"></i> 바로구매
+												</button>
+											</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</html>
+
+
+

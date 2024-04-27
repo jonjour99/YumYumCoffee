@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" style="height:100%">
+ <head th:replace="fragments/head :: main-head"> </head>
+		<title>YumYumCoffee</title>
+        
+       <body th:fragment="main-body">
+        <!-- Header -->
+        <div th:replace="fragments/header :: header"> </div>
+        
+        <!-- Modal -->
+        <th:block layout:fragment="modal"></th:block>
+                 
+        <!-- Section-->
+        <section>
+            <img th:src="@{/img/landingPage.jpg}"></img>
+        </section>        
+        
+        
+        <!-- Footer-->
+        <footer class="py-3 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; YumYum Coffee 2022</p></div>
+        </footer>
+        
+        <!-- Bootstrap core JS-->
+        <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js}"></script>
+        <!-- Core theme JS-->
+        <!-- <script th:src="@{/js/scripts.js}"></script> -->
+        <script th:src="@{/plugin/common/moment.js}"></script>
+        <script th:src="@{/scripts/jquery.min.js}"></script>
+        <script th:src="@{/plugin/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/plugin/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js}"></script>
+        <script th:src="@{/scripts/main.js}"></script>
+        <script th:src="@{/scripts/common.js}"></script>
+        <th:block layout:fragment="script"></th:block>
+    
+    </body>
+</html>

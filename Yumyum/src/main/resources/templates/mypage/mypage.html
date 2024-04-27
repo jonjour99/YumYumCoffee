@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/basic">
+
+<th:block layout:fragment="title">
+	<title>YumYum Coffee</title>
+</th:block>
+
+<th:block layout:fragment="header">
+	<h4 class="display-3 fw-bolder">My Page</h4>
+	<p class="lead fw-normal text-white-50 mb-0"></p>
+</th:block>
+
+<th:block layout:fragment="content">
+	<div class="row gx-4 gx-lg-5 justify-content-end">
+		<div class="flex justify-evenly mt-5 col">
+			<!-- 스탬프 영역 -->
+			<div class="text-center">
+				<p style="font-size: x-large; margin-bottom: 10px; font-weight: 500;">STAMP</p>
+				<div class="flex flex-row flex-wrap flex-content-start w-64 border-3 border-slate-600"
+					id="StampContainer">
+					<th:block th:if="${member.stamp}==0">
+						<th:block th:each="n: ${#numbers.sequence(1,15)}">
+							<div style="width: 50px; height: 50px; border: solid 1px grey;">
+							</div>
+						</th:block>
+					</th:block>
+					<th:block th:unless="${member.stamp}==0">
+						<th:block th:each="n: ${#numbers.sequence(1,member.stamp)}">
+							<div>
+								<img th:src="@{/img/stamp.jpg}"
+									style="width: 50px; height: 50px; border: solid 1px grey;"></img>
+							</div>
+						</th:block>
+						<th:block th:each="n: ${#numbers.sequence(member.stamp,14)}">
+							<div style="width: 50px; height: 50px; border: solid 1px grey;"></div>
+						</th:block>
+					</th:block>
+				</div>
+			</div>
+
+			<!-- 쿠폰 영역 -->
+			<div class="text-center">
+				<p style="font-size: x-large; margin-bottom: 10px; font-weight: 500;">COUPON</p>
+				<p th:text="${couponTotalCount}" onclick="openModal()"
+					style="cursor: pointer; font-size: xx-large;"></p>
+			</div>
+		</div>
+		<th:block th:replace="fragments/mypageSidebar :: sidebar"></th:block>
+	</div>
+</th:block>
+
+<th:block layout:fragment="modal">
+
+	<div id="couponModal" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="commentModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header"
+					style="display: flex; justify-content: space-between;">
+					<div
+						class="text-slate-900 font-semibold mt-4 mb-4 ml-4 text-center text-3xl leading-6 dark:text-slate-100">
+						보유 쿠폰</div>
+
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close" onclick="openModal()">
+						<img aria-hidden="true"
+							th:src="@{https://cdn3.iconfinder.com/data/icons/status/100/close_1-512.png}"
+							style="width: 15px; height: 15px; margin: 20px;"></img>
+						<!-- <span aria-hidden="true"></span> -->
+					</button>
+				</div>
+				<div class="modal-body">
+					<ul id="coupon-list"></ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="modalIdentification" class="modal fade" tabindex="-1"
+		role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header"
+					style="display: flex; justify-content: space-between;">
+					<div class="font-semibold mt-2 mb-2 ml-2 text-2xl text-center dark">
+						본인 확인</div>
+
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close" onclick="openModalId()">
+						<img aria-hidden="true"
+							th:src="@{https://cdn3.iconfinder.com/data/icons/status/100/close_1-512.png}"
+							style="width: 15px; height: 15px; margin: 20px;"></img>
+						<!-- <span aria-hidden="true"></span> -->
+					</button>
+				</div>
+
+				<div class="modal-body">
+					<div class="modalId-content">
+						<div class="mt-2">
+							<p class="mt-2">내정보수정 페이지로 이동하기 위해 비밀번호를 입력해 주세요.</p>
+						</div>
+						<div class="mt-3 form-group">
+							<label class="ml-2 col-sm-2 font-bold">비밀번호</label>
+							<div class="mt-2 text-center">
+								<input type="password" id="pw" name="pw" class="form-control"
+									placeholder="비밀번호를 입력해 주세요." />
+							</div>
+						</div>
+					</div>
+
+					<div class="mt-2 text-right">
+						<button class="btn btn-dark waves-effect waves-light"
+							id="btnConfirm" name="btnConfirm">확인</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+<!-- 자바스크립트 -->
+<th:block layout:fragment="script">
+	<script src='https://code.jquery.com/jquery-3.5.0.js'></script>
+	<script th:inline="javascript">
+            /*<![CDATA[*/
+            
+            $("#pw").keydown(function(e) {
+		   		if (e.keyCode == 13) {
+		   			$('#btnConfirm').trigger('click');
+		   		}
+			});
+			$(document)
+			.on('click','#btnConfirm',function(){
+				$.ajax({
+				    url:'/identification',
+				    type:'post',
+				    data:{pw:$('#pw').val()},
+				    success:function(result){ //컨트롤러에서 넘어온 result값을 받는다 
+				        if(result != 1){ //result가 1이 아니면(=0일 경우) -> 본인확인 실패 
+				        	alert("본인임을 확인할 수 없습니다.");
+					        return false;
+				                
+				        } else { // result가 1일 경우 -> 본인확인 완료
+							document.location="/updateuser";
+						    return true;
+				        }
+				    },
+				    error:function(){
+			        	alert("본인임을 확인할 수 없습니다.");
+				        console.log("본인임을 확인할 수 없습니다.");
+				        return false;
+				    }
+				});
+			})
+		    
+			function openModalId() {
+				$("#modalIdentification").modal("toggle");
+			};
+		    /*[- end of function -]*/
+			
+    /*쿠폰 리스트 출력*/       
+    (function() {
+        printCouponList();
+    })();
+    
+    function printCouponList() {
+
+        var uri = /*[[ @{/yumyum/coupon/} + ${member.userNum} ]]*/null;
+
+        $.get(uri, function(response) {
+            if (isEmpty(response) == false) {
+                let couponHtml = "";              
+
+                $(response.couponList).each(function(num, coupon) {
+                    let expDate = (coupon.expirationDate).substring(0,10);
+                    couponHtml += `
+                        <li class="bg-stone-100 border-solid border-2 rounded m-3 p-3 border-slate-600">
+                            <div style="display:flex; flex-flow: row wrap; justify-content: space-between;">
+                                <div class="py-1 font-semibold hover:text-slate-900 dark:text-slate-400">${coupon.kind} 쿠폰</div>
+                                <div class="py-1 font-semibold hover:text-slate-900 dark:text-slate-400">유효기간 : ${expDate}까지</div>
+                            </div>
+                            <div>${coupon.description}</div>
+                        </li>
+                    `;
+                });
+                $("#coupon-list").html(couponHtml);
+            }
+        }, "json");
+    };
+    /*[- end of function -]*/
+    
+	function openModal() {
+	    $("#couponModal").modal("toggle");
+	};
+     /*[- end of function -]*/
+            /*]]>*/
+        </script>
+</th:block>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+<link rel="stylesheet" th:href="${pageContext.request.contextPath}/css/bootstrap.min.css" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+	<th:block layout:fragment="title">
+		<title>Yum 아이디 찾기</title>
+	</th:block>
+	
+    <th:block layout:fragment="header">
+        <h6 class="display-6 fw-bolder">아이디 찾기</h6>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+	
+	<th:block layout:fragment="content">
+		<div class="card-content mt-5">
+		
+			<div class="form-group">
+				<div class="input-group mt-2" style="width:500px; margin:auto;">
+					<span class="input-group-text" style="width:130px;">이름</span>
+					<input type="text" id="name" name="name" class="form-control" 
+							placeholder="이름을 입력해 주세요." />
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="input-group mt-2" style="width:500px; margin:auto;">
+					<span class="input-group-text" style="width:130px;">이메일</span>
+					<input type="text" id="email" name="email" class="form-control" 
+							placeholder="이메일을 입력해 주세요." />
+				</div>
+			</div>
+		
+			<div class="btn_wrap text-center mt-5">
+				<a th:href="@{/login}"><button class="btn btn-outline-dark waves-effect waves-light mx-3 w-32">로그인</button></a>
+				<button class="btn btn-outline-dark waves-effect waves-light mx-3 w-32" id="btnFind" name="btnFind">아이디 찾기</button>
+				<a th:href="@{/findPw}"><button class="btn btn-outline-dark waves-effect waves-light mx-3 w-32" >비밀번호 찾기</button></a>
+			</div>
+			
+		</div>
+	</th:block>
+		
+	<th:block layout:fragment="script">
+		<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+		<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+		<script th:inline="javascript">
+		
+		/*<![CDATA[ */
+			$(document)
+			.on('click', '#btnFind', function(){
+				
+				if ($('#name').val() == "") {
+					alert("이름을 확인해주세요.");
+					return false;
+					
+				} else if ($('#email').val() == "") {
+					alert("이메일을 확인해주세요.");
+					return false;
+					
+				} else if(emailCheck() == false){
+					alert("이메일 형식을 확인해주세요.");
+					return false;
+					
+				} else {
+					$.ajax({
+				    	url:'/findId',
+				        type:'POST',
+				        data:{name: $('#name').val(),
+				        	  email: $('#email').val()
+				        },
+				        success: function(result) { 
+				        	if (result != ""){
+				        		console.log(result);
+					            alert($('#name').val()+"님의 ID는 '"+result+"'입니다");
+					        	return true;
+					        	
+				        	} else {
+				        		console.log(result);
+					            alert("ID를 찾을 수 없습니다.");
+					            return false;
+				        	}
+						},
+				        error:function(){
+			        		console.log(result);
+				            alert("ID를 찾을 수 없습니다.");
+				            return false;
+				        }
+					});
+				}
+			})
+			function emailCheck(){ /*이메일 정규식*/
+			    var emailRegExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+			    
+			    var email = $('#email').val();
+			    if(!emailRegExp.test(email)) {
+					return false;
+			    }
+			    return true;
+			};
+		/*[- end of function -]*/
+	
+		/*]]>*/
+		</script>
+	</th:block>
+</html>

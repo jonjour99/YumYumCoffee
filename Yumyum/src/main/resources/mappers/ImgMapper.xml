@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yum.mapper.ImgMapper">
+
+    <sql id="attachColumns" >
+          img_num
+        , product_num
+        , original_name
+        , save_name
+        , img_path
+        , img_size
+        , insert_time
+        , delete_yn
+    </sql>
+
+    <insert id="insertAttach" parameterType="list">
+        INSERT INTO img( 
+            <include refid="attachColumns" />        
+        )
+        select img_seq.nextval, A.* 
+        from(
+         <foreach collection="list" item="item" separator="union all">
+           select 
+                  #{item.productNum,jdbcType=INTEGER}
+                , #{item.originalName}
+                , #{item.saveName}
+                , #{item.imgPath}
+                , #{item.size}
+                , SYSDATE
+                , 'N'
+           from dual
+         </foreach>
+         ) A
+    </insert> 
+
+    <select id="selectAttachDetail" parameterType="long" resultType="com.yum.domain.ImgDTO">
+        SELECT
+            <include refid="attachColumns" />
+        FROM
+            img
+        WHERE
+            delete_yn='N'
+        AND
+            img_num = #{imgNum}
+    </select>
+
+    <update id="deleteAttach" parameterType="long">
+        UPDATE img
+        SET
+            delete_yn='Y'
+        WHERE
+            product_num= #{productNum}
+    </update>
+ 
+    <select id="selectAttachList" parameterType="long" resultType="com.yum.domain.ImgDTO">
+        SELECT
+            <include refid="attachColumns" />
+        FROM
+            img
+        WHERE
+            delete_yn='N'
+        AND
+            product_num= #{productNum}
+    </select>
+
+    <select id="selectAttachTotalCount" parameterType="long" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            img
+        WHERE
+            delete_yn='N'
+        AND
+            product_num= #{productNum}
+    </select>
+    
+    <update id="updateAttach" parameterType="list">
+        UPDATE img
+        SET
+            delete_yn = 'N'
+        WHERE
+            img_num IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

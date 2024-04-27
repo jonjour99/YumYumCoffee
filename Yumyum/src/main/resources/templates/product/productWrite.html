@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+
+    <th:block layout:fragment="title">
+        <title>제품등록</title>
+    </th:block>
+    
+    <th:block layout:fragment="header">
+		<h4 class="display-3 fw-bolder">제품 등록</h4>
+		<p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+
+    <th:block layout:fragment="content">
+
+        <div>
+           <!-- <h2>제품 등록</h2> -->
+           <p>새로운 제품을 등록하세요.</p>
+        </div>
+        
+        <div class="container mt-3">
+          <div class="card">
+            <div class="card-body">
+                <th:block>
+                   <form class="form-horizontal" th:action="@{/product/register}" th:object="${product}" method="post" enctype="multipart/form-data" >
+                    <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
+                    <input type="hidden" th:if="*{productNum != null and productNum > 0}" th:field="*{productNum}" />
+                    
+                    <!--/* 파일이 변경된 경우, 해당 파라미터를 이용하여 파일 삭제  */-->
+                    <input type="hidden" th:field="*{changeYn}" value="N" />
+                     
+                    <!-- <div class="form-group"> -->
+                    <label for="codeId" class="col-1 control-label">분류</label>
+                        <span class="col-sm-6">
+                           <select onchange="categoryChange(this)" class="selectBorder">
+                               <option>선택해주세요</option>
+                               <option value="b">음료</option>
+                               <option value="d">베이커리</option>
+                           </select>
+                           
+                           <select id="good" name="codeId" class="selectBorder">
+                               <option >------</option>
+                           </select>
+                        </span>
+                        
+                    
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">제품명</label>
+                        <div class="col-sm-12">
+                            <input type="text" th:field="*{name}" class="form-control" placeholder="제품명을 입력해 주세요." />
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="price" class="col-sm-2 control-label">가격</label>
+                        <div class="col-sm-12">
+                            <input type="number" th:field="*{price}" class="form-control" />
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="info" class="col-sm-2 control-label">상세정보</label>
+                        <div class="col-sm-12">
+                            <textarea th:field="*{info}" class="form-control"
+                                placeholder="상세정보 입력해 주세요."></textarea>
+                        </div>
+                    </div>
+        
+                    <!--/* 저장된 파일이 없는 파일 영역 */-->
+                    <div th:if="${#lists.isEmpty( fileList )}" data-name="fileDiv" class="form-group filebox bs3-primary">
+                        <label for="file_0" class="col-sm-2 control-label">파일1</label>
+                        <div class="col-sm-12">
+                            <input type="text" class="upload-name" value="파일 찾기" readonly />
+                            <label for="file_0" class="control-label">찾아보기</label>
+                            <input type="file" name="files" id="file_0" class="upload-hidden" onchange="changeFilename(this)" />
+    
+                            <button type="button" onclick="addFile()" class="btn1">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" onclick="removeFile(this)" class="btn1">
+                                <i class="fa fa-minus" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!--/* 저장된 파일이 있는 파일 영역 */-->
+                    <div th:unless="${#lists.isEmpty( fileList )}" th:each="row, status : ${fileList}" data-name="fileDiv" class="form-group filebox bs3-primary">
+                        <label th:for="|file_${status.index}|" class="col-sm-2 control-label">[[ |파일${status.count}| ]]</label>
+                        <div class="col-sm-12">
+                            <input type="hidden" name="fileIdxs" th:value="${row.imgNum}" />
+                            <input type="text" class="upload-name" th:value="${row.originalName}" readonly />
+                            <label th:for="|file_${status.index}|" class="control-label">찾아보기</label>
+                            <input type="file" name="files" th:id="|file_${status.index}|" class="upload-hidden" onchange="changeFilename(this)"/>
+                            
+                            <button th:if="${status.first}" type="button" onclick="addFile()" class="btn1">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" onclick="removeFile(this)" class="btn1">
+                                <i class="fa fa-minus" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+        
+                    <div id="btnDiv" class="btn_wrap text-center">
+                        <a th:href="@{/product/list}" class="btn btn-outline-secondary">뒤로가기</a>
+                        <button type="submit" class="btn btn-dark bg-neutral-800">저장하기</button>
+                    </div>
+                </form>
+               </th:block>
+            </div>
+          </div>
+        </div>
+
+    <th:block layout:fragment="script">
+    <script  th:inline="javascript">
+    /*<![CDATA[*/
+    
+         const fileList = /*[[ ${fileList} ]]*/null; /*[- 업로드 파일 리스트 -]*/
+        let fileIdx = (fileList==null) ? 0 : fileList.length; /*[- 파일 인덱스 처리용 전역 변수 -]*/
+
+        function addFile() {
+    
+            const fileDivs = $('div[data-name="fileDiv"]');
+            if (fileDivs.length > 2) {
+                alert('파일은 최대 세 개까지 업로드 할 수 있습니다.');
+                return false;
+            }
+    
+            document.getElementById('changeYn').value = 'Y';
+            fileIdx++;
+    
+            const fileHtml = `
+                <div data-name="fileDiv" class="form-group filebox bs3-primary">
+                    <label for="file_${fileIdx}" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="upload-name" value="파일 찾기" readonly />
+                        <label for="file_${fileIdx}" class="control-label">찾아보기</label>
+                        <input type="file" name="files" id="file_${fileIdx}" class="upload-hidden" onchange="changeFilename(this)" />
+    
+                        <button type="button" onclick="removeFile(this)" class="btn1">
+                            <i class="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+    
+            $('#btnDiv').before(fileHtml);
+        }
+        /*[- end of function -]*/
+        
+        
+        function removeFile(elem) {
+
+            document.getElementById('changeYn').value = 'Y';
+
+            const prevTag = $(elem).prev().prop('tagName');
+            if (prevTag === 'BUTTON') {
+                const file = $(elem).prevAll('input[type="file"]');
+                const filename = $(elem).prevAll('input[type="text"]');
+                file.val('');
+                filename.val('파일 찾기');
+
+                $(elem).prevAll('input[name="fileIdxs"]').remove();
+                return false;
+            }
+
+            const target = $(elem).parents('div[data-name="fileDiv"]');
+            target.remove();
+        }
+        /*[- end of function -]*/
+        
+         function changeFilename(file) {
+
+            document.getElementById('changeYn').value = 'Y';
+        
+            file = $(file);
+            const filename = file[0].files[0].name;
+            const target = file.prevAll('input.upload-name');
+            target.val(filename);
+
+            file.prevAll('input[name="fileIdxs"]').remove();
+        } 
+         /*[- end of function -]*/
+         
+        /* selectbox */
+
+        function categoryChange(e) {
+            var good_b = ["커피", "라떼","스무디", "에이드","주스" ,"티"];
+            var good_d = ["빵", "케이크"];
+
+            var good_b_v = ["b1", "b2", "b3", "b4","b5","b6"];
+            var good_d_v = ["d1", "d2"];
+
+            var target = document.getElementById("good");
+
+            if(e.value == "b") {
+                var d = good_b; 
+                var b = good_b_v;
+            } else if(e.value == "d") {
+                var d = good_d;
+                var b = good_d_v;
+            }
+            
+            target.options.length = 0;
+
+            for (x in d) {
+                var opt = document.createElement("option");
+                    for (i in b){
+                        opt.value = b[x];
+                    }
+                opt.innerHTML = d[x];
+                target.appendChild(opt);
+            }
+
+        }
+        
+        /*[- end of function -]*/
+        
+        /*]]>*/
+    </script>
+</th:block>
+</html>

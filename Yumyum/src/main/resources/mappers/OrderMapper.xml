@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yum.mapper.OrderMapper">
+
+    <!-- 주문 내역 추가-->
+    <insert id="insertOrder" parameterType="com.yum.domain.OrderDTO">
+		INSERT INTO "order" (
+			"order_num"	
+			, "user_num"	
+			, "branch_num"	
+			, "pickup_yn"	
+			, PICKUP_TIME
+			, "order_time"	
+			, "total_price"	
+		) VALUES (
+			ORDER_SEQ.NEXTVAL
+			, #{userNum}
+			, #{branchNum}
+			, #{pickupYn}
+			, CURRENT_DATE+#{pickupTime}/(24*60)
+			, CURRENT_DATE
+			, #{totalPrice}
+		)
+    </insert>
+    
+    <!--회원의 최근 생성한 주문 컬럼의 주문번호 가져오기 -->
+    <select id="selectOrderNum" parameterType="Long" resultType="Long">
+    	SELECT "order_num" 
+			FROM
+				(SELECT 
+					o."order_num"
+					, RANK() OVER (ORDER BY o."order_time" DESC) AS RANK
+				FROM 
+					"order" o 
+				WHERE 
+					"user_num"=#{userNum}
+				AND
+					TRUNC(o."order_time",'DD')=TRUNC(CURRENT_DATE,'DD')  
+				) 
+			WHERE 
+				RANK=1
+    </select>
+    
+    <!-- 주문 세부 내역 추가-->
+    <insert id="insertOrderDetail" parameterType="com.yum.domain.CartDTO">
+		INSERT INTO "order_detail" (
+		  	"order_num"	
+			, "product_num"	
+			, "qty"	
+			, "price"	
+			, "shot_custom"	
+		) VALUES (
+			#{orderNum}
+			, #{productNum}
+			, #{qty}
+			, #{totalPrice}
+			, #{shotCustom}
+		)
+    </insert>
+    
+    <!-- 주문한 수량만큼 스탬프/쿠폰 추가 프로시저 호출-->
+    <insert id="insertCoupon" parameterType="map"> 
+    	CALL ADD_COUPON(
+    		#{userNum}
+    		, #{totalQty}
+   		)
+    </insert>
+    
+    <!-- 결제 정보 저장 -->
+    <insert id="insertPayInfo" parameterType="com.yum.domain.PaymentDTO">
+    	INSERT INTO PAYMENT (
+		  	IMP_UID
+		  	, MERCHANT_UID
+		  	, PAY_METHOD
+		  	, PAID_AMOUNT
+		  	, APPLY_NUM
+		) VALUES (
+			#{impUid}
+			, #{merchantUid}
+			, #{payMethod}
+			, #{paidAmount}
+			, #{applyNum}
+		)
+    </insert>
+    
+    <!-- 결제 정보에 주문 번호 추가 -->
+    <update id="updateOrderNumPay" parameterType="com.yum.domain.PaymentDTO">
+    	UPDATE
+    		PAYMENT
+    	SET
+    		ORDER_NUM=#{orderNum}
+    	WHERE
+    		IMP_UID=#{impUid}
+    </update>
+</mapper>

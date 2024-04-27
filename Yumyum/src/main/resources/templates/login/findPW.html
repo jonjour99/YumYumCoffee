@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+<link rel="stylesheet" th:href="${pageContext.request.contextPath}/css/bootstrap.min.css" />
+
+	<th:block layout:fragment="title">
+		<title>Yum 비밀번호 찾기</title>
+	</th:block>
+	
+    <th:block layout:fragment="header">
+        <h6 class="display-6 fw-bolder">비밀번호 찾기</h6>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+	
+	<th:block layout:fragment="content">
+		<div class="card-content mt-5">
+		
+			<div class="form-group">
+				<div class="input-group mt-2" style="width:500px; margin:auto;">
+					<span class="input-group-text" style="width:130px;">아이디</span>
+					<input type="text" id="id" name="id" class="form-control" 
+							placeholder="ID를 입력해 주세요." />
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="input-group mt-2" style="width:500px; margin:auto;">
+					<span class="input-group-text" style="width:130px;">이메일</span>
+					<input type="text" id="email" name="email" class="form-control" 
+							placeholder="EMAIL을 입력해 주세요." />
+				</div>
+				<div class="input-group" style="width:500px; margin:auto;">
+					<span class="span_email_check" style="display:none;"></span>
+				</div>
+			</div>
+		
+			<div class="btn_wrap text-center mt-5">
+			     <button class="btn btn-outline-dark waves-effect waves-light mx-3 w-32" id="btnFind" name="btnFind">비밀번호 찾기</button>
+			     <a th:href="@{/login}">
+			         <button class="btn btn-outline-dark waves-effect waves-light mx-3 w-32">로그인</button>
+			     </a>
+			</div>
+			
+		</div>
+	</th:block>
+		
+	<th:block layout:fragment="script">
+		<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+		<script th:inline="javascript">
+		
+		/* <![CDATA[ */
+			$(document)
+			.on('click', '#btnFind', function(){
+				
+				if ($('#id').val() == "") {
+					alert("iD를 확인해주세요.");
+					return false;
+					
+				} else if ($('#email').val() == "") {
+					alert("이메일을 확인해주세요.");
+					return false;
+					
+				} else if(emailCheck() == false){
+					alert("이메일 형식을 확인해주세요.");
+					return false;
+					
+				} else {
+					$.ajax({
+				    	url:'/findPw',
+				        type:'POST',
+				        data:{id: $('#id').val(),
+				        	  email: $('#email').val()
+				        },
+				        success: function(result) { 
+				        	if (result == 1){
+				        		console.log(result);
+				        		$.ajax({
+				        		   	url:'/newPwMail',
+				        			type:'POST',
+				        			data:{email: $('#email').val(),
+				        				  id: $('#id').val()
+				        			},
+				        			dataType : "text",
+				        			success: function(text) { 
+				        				if (!emailCheck(text)){
+				        					alert("메일 전송에 실패하였습니다.");
+				        					return false;
+				        					
+				        				} else {
+				        					alert("임시비밀번호를 전송하였습니다. 메일을 확인해주세요.");
+											document.location="login";
+				        					
+				        					return true;
+				        				}
+				        			},
+				        			error:function(){
+				        				alert("임시비밀번호 전송실패");
+				        		        return false;
+				        			}
+				        		});
+					        	return true;
+				        	} else {
+				        		console.log(result);
+					            alert("비밀번호를 찾을 수 없습니다.");
+					            return false;
+				        	}
+						},
+				        error:function(){
+			        		console.log(result);
+				            alert("비밀번호를 찾을 수 없습니다.");
+				            return false;
+				        }
+					});
+				}
+			})
+			function emailCheck(){ /*이메일 정규식*/
+			    var emailRegExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+			    
+			    var email = $('#email').val();
+			    if(!emailRegExp.test(email)) {
+					return false;
+			    }
+			    return true;
+			};
+		/*[- end of function -]*/
+	
+		/*]]>*/
+		</script>
+	</th:block>
+</html>

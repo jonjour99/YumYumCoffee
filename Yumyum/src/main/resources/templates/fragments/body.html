@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<body style="height:100%; padding-bottom:56px;" th:fragment="main-body">
+	<div class="wrap" style="min-height:100%; position:relative;">
+		<!-- Header -->
+		<div th:replace="fragments/header :: header"></div>
+
+		<!-- Modal -->
+		<th:block layout:fragment="modal"></th:block>
+
+		<main>  
+		<!-- Section-->
+			<section class="">
+				<div class="container px-lg-5 mt-5 mb-5">
+					<!-- content -->
+					<th:block layout:fragment="content"></th:block>
+					<!-- </div> -->
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<!-- Footer-->
+	<footer class="py-3 bg-dark bottom">
+		<div class="container">
+			<p class="m-0 text-center text-white">Copyright &copy; YumYum
+				Coffee 2022</p>
+		</div>
+	</footer>
+
+	<!-- Bootstrap core JS-->
+	<script
+		th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js}"></script>
+	<!-- Core theme JS-->
+	<!-- <script th:src="@{/js/scripts.js}"></script> -->
+	<script th:src="@{/plugin/common/moment.js}"></script>
+	<script th:src="@{/scripts/jquery.min.js}"></script>
+	<script th:src="@{/plugin/bootstrap/js/bootstrap.min.js}"></script>
+	<script
+		th:src="@{/plugin/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js}"></script>
+	<script th:src="@{/scripts/main.js}"></script>
+	<script th:src="@{/scripts/common.js}"></script>
+	<th:block layout:fragment="script"></th:block>
+
+</body>
+</html>

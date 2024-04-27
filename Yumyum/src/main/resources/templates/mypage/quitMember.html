@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+    <th:block layout:fragment="title">
+        <title>YumYum 회원정보 수정</title>
+    </th:block>
+    
+    <th:block layout:fragment="header">
+        <h6 class="display-6 fw-bolder">탈퇴 안내</h6>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+    	<div id="container">
+			<div id="content" align=center>
+				<div class="card-header">
+					<p class="lead">회원탈퇴를 신청하기 전에 안내 사항을 꼭 확인해주세요.</p>
+				</div><br>
+			
+				<div class="card" align=center valign=middle>
+				<div class="info" align=left>
+				<div class="info2" style="margin-left: 40px;line-height: 1.8;">
+				<br><b>사용하고 계신 아이디(<span th:text="${ID}"></span>)는 탈퇴할 경우 재사용 및 복구가 불가능합니다.</b>
+					<p><i>탈퇴한 아이디는 본인과 타인 모두 재사용 및 복구가 불가</i>하오니 신중하게 선택하시기 바랍니다.</p>
+					<b>탈퇴 후 회원정보 및 개인형 서비스 이용기록은 모두 삭제됩니다.</b>
+					<p>회원정보 및 회원권, 북마크, 좋아요 등 개인형 서비스 이용기록은 모두 삭제되며, 삭제된 데이터는 복구되지 않습니다.<br>
+					   삭제되는 내용을 확인하시고 필요한 데이터는 미리 백업을 해주세요.</p>
+		
+					<b>탈퇴 후에도 게시판형 서비스에 등록한 게시물은 그대로 남아 있습니다.</b>
+					<p>커뮤니티에 올린 게시글 및 댓글은 탈퇴 시 자동 삭제되지 않고 그대로 남아 있습니다.<br>
+					   삭제를 원하는 게시글이 있다면 <b><em>반드시 탈퇴 전 삭제하시기 바랍니다.</em></b><br>
+					   탈퇴 후에는 회원정보가 삭제되어 본인 여부를 확인할 수 있는 방법이 없어, 게시글을 임의로 삭제해드릴 수 없습니다.</p>
+		
+					<p class="contxt">
+					<strong>탈퇴 후에는 아이디 <span th:text="${ID}"></span> 로 다시 가입할 수 없으며 아이디와 데이터는 복구할 수 없습니다.<br>
+						게시판형 서비스에 남아 있는 게시글은 탈퇴 후 삭제할 수 없습니다.<br>
+						또한, YumYumCoffee를 사용해 다른 서비스를 이용 할 수 없게 됩니다.</strong></p><br>
+				</div>
+				</div>
+				</div>
+					
+				<div class="card-footer"><br>
+					<input type="checkbox" id="dropoutAgree" name="dropoutAgree">
+					<strong>안내 사항을 모두 확인하였으며, 이에 동의합니다.</strong>
+					<div style="margin-bottom: 15px;" align=center>
+						<input type=button id="btnNext" class="btn btn-outline-dark waves-effect waves-light m-3" value=확인>
+					</div>				
+				</div>
+				
+			</div>
+		</div>
+    </th:block>
+    
+<th:block layout:fragment="modal">
+	<div id="modalIdentification" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				
+				<div class="modal-header" style="display: flex; justify-content: space-between;">
+					<div class="font-semibold mt-2 mb-2 ml-2 text-2xl text-center dark">
+						본인 확인</div>
+	
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" 
+							onclick="openModalId()">
+						<img aria-hidden="true" th:src="@{https://cdn3.iconfinder.com/data/icons/status/100/close_1-512.png}"
+							style="width: 15px; height: 15px; margin: 20px;"></img>
+					</button>
+				</div>
+					
+				<div class="modal-body">
+					<div class="modalId-content">
+						<div class="mt-2">
+							<p class="mt-2">탈퇴하기 위해 비밀번호를 입력해 주세요.</p>
+						</div>
+						<div class="mt-3 form-group">
+							<label class="ml-2 col-sm-2 font-bold">비밀번호</label>
+							<div class="mt-2 text-center">
+								<input type="password" id="pw" name="pw" class="form-control" 
+										placeholder="비밀번호를 입력해 주세요." />
+							</div>
+						</div>
+					</div>
+					
+					<div class="mt-2 text-right">
+						<button class="btn btn-dark waves-effect waves-light m-3" 
+								id="btnConfirm" name="btnConfirm">확인</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+    
+<!-- 자바스크립트 -->
+<th:block layout:fragment="script">
+	<script src='https://code.jquery.com/jquery-3.5.0.js'></script>
+	<script th:inline="javascript">
+		/*<![CDATA[ */
+			let ID = /*[[${ID}]]*/null;
+			
+			$(document)
+			
+			.on('click','#btnNext',function(){
+				if($('#dropoutAgree').is(":checked")){
+					openModalId();
+				} else {
+					alert("탈퇴 안내를 확인하고 동의해 주세요.");
+					$("#dropoutAgree").focus();
+				}
+			})
+			.on('click','#btnConfirm',function(){
+				$.ajax({
+			    	url:'/identification',
+			        type:'post',
+			        data:{pw:$('#pw').val()},
+			        success:function(result){ //컨트롤러에서 넘어온 result값을 받는다 
+			        	if(result != 1){ //result가 1이 아니면(=0일 경우) -> 본인확인 실패 
+			        		alert("본인임을 확인할 수 없습니다.");
+				            return false;
+			                
+			            } else { // result가 1일 경우 -> 본인확인 완료
+			    			if (confirm(ID + "님, 탈퇴하시겠습니까?")) {
+			    				var uri = /*[[ @{/quitMember} ]]*/null;
+			    				var userNum = /*[[${member.userNum}]]*/null;
+			    				var html = "";
+
+			    				html += '<form name="dataForm" action="'+uri+'" method="post">';
+			    					html += '<input type="hidden" name="userNum" value="'+userNum+'" />';
+			    				html += '</form>';
+
+			    				$("#container").append(html);
+			    				document.dataForm.submit();
+			    			}
+					        return true;
+			            }
+			        },
+			        error:function(){
+		        		alert("본인임을 확인할 수 없습니다.");
+			            return false;
+			        }
+				});
+			})
+			
+			function openModalId() {
+				
+				$("#modalIdentification").modal("toggle");
+			}
+		/*[- end of function -]*/
+		/*]]>*/
+	</script>
+</th:block>
+</html>

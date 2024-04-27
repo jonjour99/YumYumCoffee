@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <div th:fragment="header">
+        <nav class="navbar navbar-expand-lg navbar-light  bg-white">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" th:href="@{/home}">
+                    <img th:src="@{/img/yumyumCoffee_logo_wide.png}"
+                        style="width:250px;"></img>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link" aria-current="page" th:href="@{/home}">Home</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" th:href="@{/board}">Notice</a></li> -->
+                        <li class="nav-item"><a class="nav-link" aria-current="page" th:href="@{/product}">Menu</a></li>
+                        <li class="nav-item" th:if="${member != null}">
+                            <a class="nav-link" th:href="@{/mypage}">Mypage</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex">
+                        <span class="mt-2 text-slate-700 font-semibold" th:if="${member != null}" th:text="${member.id}"></span>
+                        <span class="mt-2 mr-3 text-slate-700 " th:if="${member != null}">님, 안녕하세요!</span>
+                        <a class="btn btn-outline-dark" th:if="${member != null}" th:href="@{/logout}">
+                            Logout
+                        </a>
+                        <a class="btn btn-outline-dark" th:unless="${member != null}" th:href="@{/login}">
+                            Login
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        
+        
+        <header class="bg-dark py-1">
+            <div class="container px-4 px-lg-5 my-3">
+                <div class="text-center text-white">
+                    <!-- Header-->
+                    <th:block layout:fragment="header">
+                    </th:block>
+                </div>
+            </div>
+        </header>
+    </div>
+</html>

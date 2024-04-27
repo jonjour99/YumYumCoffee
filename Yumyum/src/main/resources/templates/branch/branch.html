@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+    <th:block layout:fragment="title">
+        <title>YumYum Coffee</title>
+    </th:block>
+ 
+    <th:block layout:fragment="header">
+        <h4 class="display-6 fw-bolder">주문할 지점 선택</h4>
+        <p class="lead fw-normal text-white-50 mb-0"></p>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- 검색 -->
+	    <!-- <th:block layout:fragment="search">
+	        <form action="#" id="searchform-header" class="searchform js__toggle active pull-right">
+	            <input type="search" placeholder="Search..." class="input-search">
+	            <button class="mdi mdi-magnify button-search" type="submit">
+	                <i class="fa fa-search" aria-hidden="true"></i>
+	            </button>
+	        </form>
+	    </th:block>  -->
+    
+        <div class="table-responsive clearfix">
+            <table class="table table-hover text-center">
+                <thead>
+                    <tr>
+						<th>매장명</th><th>전화번호</th><th>주소</th>
+                        <th class="text-center">
+	                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark" viewBox="0 0 16 16">
+							<path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+							</svg>
+						</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                <tr th:if="${not #lists.isEmpty( branchList )}" th:each="row : ${branchList}">
+                     <td>
+                     	<a th:href="@{/product(branchNum=${row.branchNum})}" th:text="${row.branchName}"></a>
+                     </td>
+                     <td th:text="${row.telephone}"></td>
+                     <td>
+                     	<a th:href="@{/map(branchNum=${row.branchNum})}" th:text="${row.address}"></a>
+                     </td>
+                     <td th:text="${row.branchNum}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+</html>

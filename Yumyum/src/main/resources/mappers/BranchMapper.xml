@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yum.mapper.BranchMapper">
+	<sql id="branchColumns">
+		branch_num,
+		branch_name,
+		address,
+		latitude,
+		longitude,
+		telephone,
+		manager_num
+	</sql>
+	
+	<select id="selectBranchList" parameterType="com.yum.domain.BranchDTO" resultType="com.yum.domain.BranchDTO">
+        SELECT branch_num ,branch_name, telephone, address  FROM BRANCH 
+        ORDER BY branch_num ASC
+    </select>
+</mapper>

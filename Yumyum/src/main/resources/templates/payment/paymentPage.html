@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/basic">
+
+
+<th:block layout:fragment="title">
+	<title>YumYum Coffee</title>
+</th:block>
+
+<th:block layout:fragment="header">
+	<h4 class="display-3 fw-bolder">My Page</h4>
+	<p class="lead fw-normal text-white-50 mb-0"></p>
+</th:block>
+
+<th:block layout:fragment="modal">
+	<div id="couponModal" class="modal fade" tabindex="-1" role="dialog"
+		aria-labelledby="commentModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<ul id="coupon-list"></ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+
+<th:block layout:fragment="content">
+	<div class="jumbotron">
+		<h1>결제 기능</h1>
+		<p>Payment</p>
+	</div>
+
+	<table class="table table-hover text-center">
+		<thead>
+			<tr>
+				<th class="col-sm-1">주문번호</th>
+				<th class="col-sm-1">고객번호</th>
+				<th class="col-sm-1">지점번호</th>
+				<th class="col-sm-1">픽업유무</th>
+				<th class="col-sm-2">결제가격</th>
+				<th class="col-sm-1">결제</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:if="${not #lists.isEmpty( paymentList )}"
+				th:each="row, i : ${ paymentList }">
+				<td scope="row" th:text="${row.orderNum}"></td>
+				<td class="text-left" th:text="${row.userNum}"></td>
+				<td class="text-left" th:text="${row.branchNum}"></td>
+				<td class="text-left" th:if="${row.pickupYn}=='N'" th:text="매장"></td>
+				<td class="text-left" th:if="${row.pickupYn}=='Y'" th:text="픽업"></td>
+				<td class="text-left" th:text="${row.totalPrice}"></td>
+				<td>
+					<button
+						th:onclick="|javascript:iamport('${row.totalPrice}', '${row.orderNum}')|">
+						결제하기</button> <!-- <button th:onclick="iamport(${ row.totalPrice })"> 결제하기 </button> -->
+
+					<!-- <button
+						th:onclick="|location.href='@{/payment.do(orderNum=${row.orderNum})}'|">결제하기</button> -->
+				</td>
+			</tr>
+
+			<tr th:unless="${not #lists.isEmpty( paymentList )}">
+				<td colspan="5">조회된 결과가 없습니다.</td>
+			</tr>
+		</tbody>
+	</table>
+
+</th:block>
+
+
+
+<!-- 자바스크립트 -->
+<th:block layout:fragment="script">
+	<script type="text/javascript"
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+
+		let paymentList = /*[[${paymentList}]]*/null;
+
+		console.log(paymentList);
+		
+		function iamport(price, orderNum) {
+			//가맹점 식별코드
+			var IMP = window.IMP;
+			IMP.init('imp46753753');
+			IMP.request_pay({
+				pg : 'kcp',
+				pay_method : 'card',
+				merchant_uid : 'merchant_' + new Date().getTime(),
+				name : "주문번호" + orderNum, //결제창에서 보여질 이름
+				amount : price, //실제 결제되는 가격
+				buyer_email : 'iamport@siot.do',
+				buyer_name : '구매자이름',
+				buyer_tel : '010-1234-5678',
+				buyer_addr : '서울 강남구 도곡동',
+				buyer_postcode : '123-456',
+			/* m_redirect_url : 'http://localhost:8080/orderComplete' */
+			}, function(rsp) {
+				console.log(rsp);
+				if (rsp.success) {
+					var msg = '결제가 완료되었습니다.';
+					msg += '고유ID : ' + rsp.imp_uid;
+					msg += '상점 거래ID : ' + rsp.merchant_uid;
+					msg += '결제 금액 : ' + rsp.paid_amount;
+					msg += '카드 승인번호 : ' + rsp.apply_num;
+					
+					$.ajax({
+		                method : "POST",
+		                /* type : "POST", */
+		                url : "/payment/" + rsp.imp_uid ,
+		                /* url : "/payment", */
+		                success: function(data){
+		                	console.log(data)
+		                }, //success end
+			            error: function (request, status, error) {
+			                console.log("code: " + request.status)
+			                console.log("message: " + request.responseText)
+			                console.log("error: " + error);
+		            } //error end
+		            }).done(function(data) {
+		                
+		                console.log(data);
+		                
+		                // 위의 rsp.paid_amount 와 data.response.amount를 비교한후 로직 실행 (import 서버검증)
+		                if(rsp.paid_amount == data.response.amount){
+		                    alert("결제 및 결제검증완료");
+		                } else {
+		                    alert("결제 실패");
+		                }
+		            }); // ajax end
+				} else {
+					var msg = '결제에 실패하였습니다.';
+					msg += '에러내용 : ' + rsp.error_msg;
+				}
+				alert(msg);
+			});
+		}; // iamport function end
+
+		/*[- end of function -]*/
+		/*]]>*/
+	</script>
+</th:block>
+
+</html>

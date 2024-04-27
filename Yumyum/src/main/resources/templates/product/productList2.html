@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+    <th:block layout:fragment="title">
+        <title>제품 목록</title>
+    </th:block>
+    
+    <th:block layout:fragment="header">
+	<h4 class="display-3 fw-bolder">지점 제품 목록</h4>
+	<p class="lead fw-normal text-white-50 mb-0"></p>
+	</th:block>
+
+    <th:block layout:fragment="content">
+        <form th:action="@{/product/list2}" th:object="${BranchProductList}" method="post">
+        <div class="container">   
+            
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th class="col-sm-1">상품번호</th>
+                        <th>제품명</th>
+                        <th th:style="${'width:200px'}">상태</th>
+                        <th th:style="${'width:100px'}"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${not #lists.isEmpty( BranchProductList )}" th:each="row,index : ${BranchProductList}" >
+                        <td scope="row" th:text="${row.productNum}"></td>
+                        <td class="text-left" th:text="${row.name}"></td>
+                        <td>
+                            <select th:id="'hidenYn'+${index.count}">
+                                <option value="N">판매</option>
+                                <option value="Y">가리기</option>
+                            </select>
+                            <button type="button" th:onclick="updateState([[${row.productNum}]],[[${row.branchNum}]])" id="btn_info">변경</button>
+                        </td>
+                        <td>
+                            <span th:if="${row.hidenYn}=='Y'" th:style="${'color:red;'}">가리기</span>
+                            <span th:if="${row.hidenYn}=='N'">판매</span>
+                        </td>
+                    </tr>
+                        
+                    <tr th:unless="${not #lists.isEmpty( BranchProductList )}">
+                        <td colspan="5">조회된 결과가 없습니다.</td>
+                    </tr>
+                   
+                </tbody>
+                
+            </table>
+        </div>
+        <br>
+        <nav th:replace="product/common :: pagination2"></nav>
+  
+        </form>
+    </th:block>
+
+<th:block layout:fragment="script">
+    <script  th:inline="javascript">
+    /*<![CDATA[*/
+    
+    //페이징
+    function movePage(uri, queryString) {
+        location.href = uri + queryString;
+    }
+    
+    //submit
+    function updateState(productNum,branchNum){
+            var uri = /*[[ @{/product/list2} ]]*/null;
+            var html = "";
+            
+            var idNum=(productNum%10)==0? '10':(productNum%10);
+            
+            var hidenYn=document.getElementById("hidenYn"+idNum);
+            var hidenYnValue=hidenYn.options[hidenYn.selectedIndex].value;
+            //alert("hidenYn.selectedIndex: "+hidenYn.selectedIndex+" hidenYnValue: "+hidenYnValue); 
+           
+            html += '<form name="dataForm" action="'+uri+'" method="post">';
+                html += '<input type="hidden" name="productNum" value="'+productNum+'" />';
+                html += '<input type="hidden" name="hidenYn" value="'+hidenYnValue+'" />';
+                html += '<input type="hidden" name="branchNum" value="'+branchNum+'" />';
+            html += '</form>'; 
+
+            $("body").append(html);
+            document.dataForm.submit();
+            
+    } 
+    
+    /*[- end of function -]*/
+
+    /*]]>*/
+    </script>
+    </th:block>
+
+</html>

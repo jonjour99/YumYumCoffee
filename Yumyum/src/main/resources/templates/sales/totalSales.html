@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">  
+    <th:block layout:fragment="title">
+        <title>전체 매출</title>
+    </th:block>
+
+    <th:block layout:fragment="content">
+        <h1>매출</h1>
+        <button class="btn btn-secondary" value="day">일별</button>
+        <button class="btn btn-secondary" value="month">월별</button>
+        <button class="btn btn-secondary" value="year">년도별</button>
+        <button class="btn btn-secondary" value="branch">지점별</button>
+        <table>
+            <tr >
+                <td th:style="${'width:300px'}">날짜</td>
+                <td>총 매출액</td>
+            </tr>
+            <tr th:if="${not #lists.isEmpty( salesList )}" th:each="row : ${salesList}">
+                <td th:text="${#temporals.format(row.orderTime,'yyyy-MM-dd')}"></td>
+                <td th:text="${row.month}"></td>
+                <td th:text="${#numbers.formatInteger(row.sum,3,'COMMA')+'원'}"></td>            
+            </tr>
+        </table>
+		<div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+		  <canvas id="myChart"></canvas>
+		</div>        
+    </th:block>
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            	/* $(document).ready(function(){
+            		getGraph();
+            	})
+            	
+            	function getGraph(){
+            	
+            		let dateList=[];
+            		let	salesList=[];
+            		
+            		$.ajax({
+            			url:"/totalSales",
+            			type:"get",
+            			data:['${orderTime}','${sum}'],
+            			dataType:"json",
+            			success:function(data){
+            				for(let i=0;i<data.length;i++){
+            					dateList.push(data[i].orderTime);
+            					salesList.push(data[i].sum);
+            				}
+            				
+            				new Chart(document.getElementById("myChart"),{
+            					type:'line',
+            					data:{
+            						labels:salesList,
+            						datasets:[{
+            							data:dateList,
+            							label:"일별",
+            							fill:false
+            						}
+            					]
+            					},
+            					options:{
+            						title:{
+            							display:true,
+            							text:"일별 매출"
+            						}
+            					}
+            				});
+            			},
+           				error:function(){
+           					alert("실패");
+           				}
+            		})
+            } */
+	        const labels = [
+	            '7/1',
+	            '7/2',
+				'7/3',
+				'7/4',
+				'7/5',
+				'7/6',
+				'7/7',
+				'7/8',
+				'7/9',
+				'7/10',
+	          ];
+
+	          const data = {
+	            labels: labels,
+	            datasets: [{
+	              label: '매출',
+	              backgroundColor: 'rgb(255, 99, 132)',
+	              borderColor: 'rgb(255, 99, 132)',
+	              data: [0,6000,0,0,0,0,7000,5000,5000,5000,5000],
+	            }]
+	          };
+
+	          const config = {
+	            type: 'line',
+	            data: data,
+	            options: {}
+	          };
+	          
+	          const myChart = new Chart(
+        		    document.getElementById("myChart"),
+        		    config
+        		  ); 
+	          /*]]>*/
+        </script>
+    </th:block>
+</html>
